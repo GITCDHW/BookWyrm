@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit a Book - Book World</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="submit.css">
+    <link rel="stylesheet" href="style.css">
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
+</head>
+<body>
+    <h1 id="sign_in_text">Hey Please Sign In To Share Your Book</h1>
+    <div id="sign_in_ui">
+    
+  </div>
+    <div class="container">
+        <header class="submission-header">
+            <div class="logo">
+                <a href="index.html"><h1>BOOK WYRM</h1></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="submit.html" class="active">Submit</a></li>
+                    </ul>
+            </nav>
+        </header>
+
+        <section class="submission-form-section">
+            <div class="form-card">
+                <h2>Submit Your Book</h2>
+                <p>Fill out the form below to submit your book for review.</p>
+                
+                <form id="form" action="#" method="post">
+                    <div class="form-group">
+                        <label for="title">Book Title</label>
+                        <input type="text" id="title" name="title" placeholder="e.g., The God Equation" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="5" placeholder="A brief summary of your book..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cover-link">Cover Link (Google Drive)</label>
+                        <input type="url" id="cover-link" name="cover-link" placeholder="Paste your cover image's Google Drive ID here" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pdf-link">PDF Link (Google Drive)</label>
+                        <input type="url" id="pdf-link" name="pdf-link" placeholder="Paste your PDFs Google Drive ID  here" required>
+                    </div>
+                
+                    <button type="submit" class="cta-button submit-button">Submit Book</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <h4>BOOK WYRM</h4>
+                <p>Made with love from India</p>
+                <p class="social-links-placeholder">Social Links Will Be Inserted Here</p>
+            </div>
+        </footer>
+
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <script src="config.js"></script>
+    <script src="submit_logic.js"></script>
+</body>
+</html>
