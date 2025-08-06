@@ -1,42 +1,32 @@
-function extractDriveId(url) {
-  // Regex to match the ID from various Google Drive URL formats
-  const regex = /(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/drive\/folders\/|docs\.google\.com\/document\/d\/|sheets\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9_-]+)/;
-  const match = url.match(regex);
-  if (match && match[1]) {
-    return match[1];
-  }
-  return null; // Return null if no ID is found
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  // Get a reference to the grid container
   const featuredBooksGrid = document.getElementById('featured-book-grid');
-
+  
   rootRef.once("value").then((snapshot) => {
     if (snapshot.exists()) {
-      let maxFeaturedBooks = 3
-      let currentBookNumber = 0
+      let maxFeaturedBooks = 3;
+      let currentBookNumber = 0;
+      
       snapshot.forEach(bookThing => {
         if (currentBookNumber < maxFeaturedBooks) {
-          const book=bookThing.val()
+          const book = bookThing.val();
 
-          // Log both IDs for verification
-          console.log("Cover ID:", book.coverLink, "PDF ID:", book.pdfLink);
+          // Log the new data structure for verification
+          console.log("Book Data:", book);
 
-          const bookItem = document.createElement("div")
-          bookItem.setAttribute("class", "book-item")
+          const bookItem = document.createElement("div");
+          bookItem.setAttribute("class", "book-item");
           
-          // Use the new book.coverId for the image src
-          bookItem.innerHTML=`<img src="https://drive.google.com/thumbnail?id=${extractDriveId(book.coverLink)}&sz=w800" alt="${book.title}">`
+          // Use the direct coverUrl for the image source
+          bookItem.innerHTML = `<img src="${book.coverUrl}" alt="${book.title}">`;
           
-          document.getElementById("featured-book-grid").appendChild(bookItem)
-          currentBookNumber+=1
+          featuredBooksGrid.appendChild(bookItem);
+          currentBookNumber += 1;
         }
-        
-      })
+      });
+    } else {
+      console.log("No featured books found in the database.");
     }
   }).catch(error => {
-    // A catch block to handle any errors during the data fetch
     console.error("Error fetching data:", error);
   });
-})
+});
