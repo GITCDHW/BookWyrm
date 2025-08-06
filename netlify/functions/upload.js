@@ -3,7 +3,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 
 // Replace this with your ImgBB API key. You can get a free one from imgbb.com.
-const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY';
+const IMGBB_API_KEY = 'e27ce0c471c6edcdf98e57c4697c4cff';
 
 exports.handler = async (event, context) => {
   // Handle CORS pre-flight requests from the browser
