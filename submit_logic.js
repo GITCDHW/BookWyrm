@@ -57,7 +57,8 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const functionUrl = `https://bookwyrmx.netlify/functions/upload`;
+  const functionUrl = `https://bookwyrmx.netlify.app/.netlify/functions/upload`;
+
 
   const formData = new FormData();
   formData.append('coverImage', file);
