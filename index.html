@@ -3,59 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit a Book - Book World</title>
+    <title>BOOK WYRM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="submit.css">
     <link rel="stylesheet" href="style.css">
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
 </head>
 <body>
-    <h1 id="sign_in_text">Hey Please Sign In To Share Your Book</h1>
-    <div id="sign_in_ui">
-    
-  </div>
     <div class="container">
-        <header class="submission-header">
+        <header>
             <div class="logo">
-                <a href="index.html"><h1>BOOK WYRM</h1></a>
+                <h1>BOOK WYRM</h1>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="submit.html" class="active">Submit</a></li>
-                    </ul>
-            </nav>
+            <div class="search-bar">
+                <input type="text" placeholder="SEARCH FOR YOUR FAVOURITE BOOK">
+                <button aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                </button>
+            </div>
         </header>
 
-        <section class="submission-form-section">
-            <div class="form-card">
-                <h2>Submit Your Book</h2>
-                <p>Fill out the form below to submit your book for review.</p>
-                
-                <form id="form" action="#" method="post">
-                    <div class="form-group">
-                        <label for="title">Book Title</label>
-                        <input type="text" id="title" name="title" placeholder="e.g., The God Equation" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" rows="5" placeholder="A brief summary of your book..." required></textarea>
-                    </div>
+        <section class="hero-section">
+              <div class="hero-image">
+                <img src="book.png" alt="An open book with a feather quill">
+            </div>
+            <div class="hero-content">
+                <h2>Expand Your Knowledge By Reading A Book</h2>
+                <button class="cta-button">Start Exploring</button>
+            </div>
+        </section>
 
-                    <div class="form-group">
-                        <label for="cover-file">Book Cover Image</label>
-                        <input type="file" id="cover-file" name="cover-file" accept="image/*" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="pdf-link">PDF Link (Google Drive)</label>
-                        <input type="url" id="pdf-link" name="pdf-link" placeholder="Paste your PDFs Google Drive ID here" required>
-                    </div>
-                
-                    <button type="submit" class="cta-button submit-button">Submit Book</button>
-                </form>
+        <section class="featured-books">
+            <h3>Featured Books</h3>
+<div class="book-grid" id="featured-book-grid">
+    </div>
+        </section>
+
+        <section class="search-by-genre">
+            <h3>SEARCH BY GENRE</h3>
+            <div class="genre-tabs">
+                <button class="genre-tab active">SCIENCE</button>
+                <button class="genre-tab">SCI-FI</button>
+                <button class="genre-tab">FINANCE</button>
+            </div>
+            
+            
+            <div class="genre-books book-grid">
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=Schrodinger+What+is+Life" alt="Schrödinger What is Life book cover">
+                </div>
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=Cosmos+by+Carl+Sagan" alt="Cosmos book cover">
+                </div>
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=In+Search+of+Schrodinger's+Cat" alt="In Search of Schrödinger's Cat book cover">
+                </div>
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=The+Nature+of+Nature" alt="The Nature of Nature book cover">
+                </div>
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=The+God+Equation+by+Michio+Kaku" alt="The God Equation book cover">
+                </div>
+                <div class="book-item">
+                    <img src="https://via.placeholder.com/200x300.png?text=Schrodinger+What+is+Life" alt="Schrödinger What is Life book cover">
+                </div>
             </div>
         </section>
 
@@ -69,10 +80,11 @@
 
     </div>
     <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
-    <script src="config.js"></script>
-    <script src="submit_logic.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+
+ <script src="config.js"></script>
+ <script src="script.js"></script>
+ 
 </body>
 </html>
