@@ -61,7 +61,7 @@ form.addEventListener("submit", async (e) => {
 
   // Define the Netlify Function URL
   // Replace 'your-site-name' with your actual Netlify site name
-  const functionUrl = `https://your-site-name.netlify.app/.netlify/functions/upload`;
+  const functionUrl = `https://bookwyrmx.netlify.app/.netlify/functions/upload`;
 
   // Create FormData object to send the file
   const formData = new FormData();
