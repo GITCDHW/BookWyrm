@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
           bookItem.setAttribute("class", "book-item");
           
           // Use the direct coverUrl for the image source
-          bookItem.innerHTML = `<img src="${book.coverUrl}" alt="${book.title}">`;
+          bookItem.innerHTML = `<a href="viewpdf.html?id=${bookThing.key}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
           
           featuredBooksGrid.appendChild(bookItem);
           currentBookNumber += 1;
