@@ -32,7 +32,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     The user preference is: "${preference}".
 
     Provide the suggestions in a structured JSON format. The format should be an array of objects, with each object having 'title', 'author', and 'summary' keys.
-    Do not include any other text, explanations, or code block delimiters (like '```json').
+    Do not include any other text, explanations, or code block delimiters (like '```json');
 
     Example format:
     [
