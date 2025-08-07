@@ -2,7 +2,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const api_key = process.env.GEMINI_API_KEY || "AIzaSyAl2eXSXR2Hhx6faUAIEekwOoxOWUOsKQc"; 
 const genAi = new GoogleGenerativeAI(api_key);
 
-const model = genAi.getGenerativeModel({ model: "gemini-pro" });
+const model = genAi.getGenerativeModel({ model: "gemini-1.0-pro" });
 
 exports.handler = async (event, context) => {
     // Handle OPTIONS requests for CORS pre-flight checks
