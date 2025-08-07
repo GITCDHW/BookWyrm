@@ -61,7 +61,14 @@ return {
   },
   body: JSON.stringify(bookSuggestions),
 };
-    } catch (e) {
-      console.log("error in netlify function")
-    }
-        }
+} catch (e) {
+  console.error("Error in Netlify function:", e); // Use console.error for better logging
+  return {
+    statusCode: 500,
+    headers: {
+      'Access-Control-Allow-Origin': '*' // <-- Add this line
+    },
+    body: JSON.stringify({ message: 'Error generating book suggestions.' }),
+  };
+}
+
