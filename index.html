@@ -15,17 +15,19 @@
             <div class="logo">
                 <h1>BOOK WYRM</h1>
             </div>
-            <div class="search-bar">
-                <input type="text" placeholder="SEARCH FOR YOUR FAVOURITE BOOK">
-                <button aria-label="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                </button>
-            </div>
-        </header>
+<div class="prompt-input">
+    <input type="text" id="suggestion-input" placeholder="I like science books">
+    <button id="get-suggestion-button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.212L1.758 9.773 8.243 14.338 14.13 2.576z"/>
+</svg>
+</button>
+  </div>
+</div>
 
-        <section class="hero-section">
-              <div class="hero-image">
-                <img src="book.png" alt="An open book with a feather quill">
+        </header>
+                <section class="hero-section">
+            <div class="hero-image">
+                <img src="book.jpg" alt="book collage">
             </div>
             <div class="hero-content">
                 <h2>Expand Your Knowledge By Reading A Book</h2>
@@ -33,30 +35,13 @@
             </div>
         </section>
 
+
         <section class="featured-books">
             <h3>Featured Books</h3>
 <div class="book-grid" id="featured-book-grid">
     </div>
         </section>
 
-<section class="book-suggestion-prompt">
-<div class="prompt-container">
-<div class="prompt-image">
-<img src="ai-circuit-head.png" alt="AI Book Suggestion">
-</div>
-<div class="prompt-text">
-<h2>Hey!, Can't Find A Book To Read For Yourself?</h2>
-<div class="prompt-input">
-<input type="text" id="suggestion-input" placeholder="What type of books do you like reading?">
-<button id="get-suggestion-button" aria-label="Get Book Suggestions">
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"/></svg>
-</button>
-</div>
-<div id="suggestion-output">
-</div>
-</div>
-</div>
-</section>
         <footer>
             <div class="footer-content">
                 <h4>BOOK WYRM</h4>
@@ -73,5 +58,13 @@
  <script src="config.js"></script>
  <script src="script.js"></script>
  
+ <div id="suggestion-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h2>Book Suggestions</h2>
+    <div id="suggestion-output-popup"></div>
+  </div>
+</div>
+
 </body>
 </html>
