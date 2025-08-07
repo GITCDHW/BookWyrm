@@ -33,7 +33,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 15px 0;
 }
 
 .logo h1 {
@@ -42,41 +42,77 @@ header {
     color: var(--secondary-color);
 }
 
-.search-bar {
+/* AI Search Bar Container */
+.prompt-input {
     display: flex;
     align-items: center;
-    background-color: var(--secondary-color);
-    border-radius: 50px;
-    padding: 5px 15px;
+    width: 40%;
+    max-width: 450px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
 }
 
-.search-bar input {
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 5px;
-    font-family: var(--body-font);
+/* Search Input Field */
+.prompt-input input {
     flex-grow: 1;
-}
-
-.search-bar button {
-    background: none;
+    padding: 10px 15px;
     border: none;
-    cursor: pointer;
-    color: var(--text-color);
+    font-size: 1rem;
+    color: #333;
+    outline: none;
 }
 
+/* Search Button */
+.prompt-input button {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.prompt-input button:hover {
+    background-color: #002a33;
+}
+
+.prompt-input button svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* -------------------------------------------------- */
 /* Hero Section */
+/* -------------------------------------------------- */
 .hero-section {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    text-align: center;
+    min-height: 500px;
     padding: 50px 0;
     color: var(--secondary-color);
-    text-align: center;
-    position: relative;
     overflow: hidden;
+}
+
+.hero-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    /* This filter makes the image darker */
+    filter: brightness(0.4) contrast(1.2) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
 }
 
 .hero-content h2 {
@@ -104,13 +140,10 @@ header {
     background-color: #e0e0e0;
 }
 
-.hero-image img {
-    max-width: 100%;
-    height: auto;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
-}
 
+/* -------------------------------------------------- */
 /* Featured Books & Search by Genre Sections */
+/* -------------------------------------------------- */
 .featured-books, .search-by-genre {
     text-align: center;
     padding: 40px 0;
@@ -144,31 +177,11 @@ h3 {
     display: block;
 }
 
-/* Genre Tabs */
-.genre-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-}
 
-.genre-tab {
-    background: none;
-    border: 2px solid var(--secondary-color);
-    color: var(--secondary-color);
-    padding: 10px 25px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s, color 0.3s;
-}
 
-.genre-tab:hover, .genre-tab.active {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
-}
-
+/* -------------------------------------------------- */
 /* Footer */
+/* -------------------------------------------------- */
 footer {
     text-align: center;
     padding: 40px 20px;
@@ -191,107 +204,51 @@ footer {
     opacity: 0.7;
     margin-top: 15px;
 }
-.book-suggestion-prompt {
-background-color: #0abde3;
-color: #fff;
-padding: 50px 20px;
-text-align: center;
+
+/* -------------------------------------------------- */
+/* Modal Pop-up */
+/* -------------------------------------------------- */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
-.prompt-container {
-max-width: 1200px;
-margin: 0 auto;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 30px;
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  border-radius: 8px;
+  position: relative;
 }
-.prompt-image {
-flex-shrink: 0;
-max-width: 200px; /* Adjust size as needed */
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
-.prompt-image img {
-display: block;
-width: 100%;
-height: auto;
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
-.prompt-text {
-flex-grow: 1;
-text-align: left;
-}
-.prompt-text h2 {
-font-family: 'Playfair Display', serif;
-font-size: 2.5rem;
-margin-bottom: 20px;
-line-height: 1.2;
-}
-.prompt-input {
-display: flex;
-align-items: center;
-max-width: 500px; /* Adjust width as needed */
-margin-top: 20px;
-margin-bottom: 15px;
-}
-.prompt-input input {
-flex-grow: 1;
-padding: 15px;
-border: none;
-border-radius: 5px 0 0 5px;
-font-size: 1rem;
-color: #333;
-}
-.prompt-input button {
-background-color: #fff;
-color: #0abde3;
-border: none;
-padding: 12.5px 11.2px;
-border-radius: 0 5px 5px 0;
-cursor: pointer;
-font-size: 1rem;
-transition: background-color 0.3s ease;
-}
-.prompt-input button:hover {
-background-color: #f0f0f0;
-}
-.prompt-input button svg {
-width: 20px;
-height: 20px;
-fill: currentColor;
-}
-#suggestion-output {
-margin-top: 20px;
-background-color: rgba(255, 255, 255, 0.1);
-padding: 20px;
-border-radius: 5px;
-font-size: 1rem;
-white-space: pre-wrap; /* Preserve formatting from AI response */
-text-align: left;
-}
+
+/* -------------------------------------------------- */
 /* Responsive Design */
+/* -------------------------------------------------- */
 @media (max-width: 768px) {
-.prompt-container {
-flex-direction: column;
-align-items: stretch;
-}
-.prompt-image {
-    max-width: 300px;
-    margin-bottom: 20px;
-}
-
-.prompt-text {
-    text-align: center;
-}
-
-.prompt-text h2 {
-    font-size: 2rem;
-}
-
-.prompt-input {
-    max-width: 100%;
-}
-
-}
-/* Responsive Design */
-@media (max-width: 768px) {
+    /* Existing responsive styles */
     .hero-section {
         flex-direction: column;
         text-align: center;
@@ -305,11 +262,16 @@ align-items: stretch;
     .book-grid {
         justify-content: center;
     }
-    .search-bar {
-        width: 100%;
-        margin-top: 10px;
-    }
+    
+    /* Corrected header responsiveness */
     header {
         flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .prompt-input {
+        width: 100%;
+        max-width: 100%;
     }
 }
