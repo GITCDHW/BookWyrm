@@ -1,7 +1,4 @@
-// Use require() syntax with a netlify.toml config, or import with package.json "type":"module"
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-// Replace with your actual API key or use a Netlify Environment Variable
 const api_key = process.env.GEMINI_API_KEY || "AIzaSyAl2eXSXR2Hhx6faUAIEekwOoxOWUOsKQc"; 
 const genAi = new GoogleGenerativeAI(api_key);
 
