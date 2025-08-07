@@ -29,51 +29,70 @@ document.addEventListener("DOMContentLoaded", () => {
   }).catch(error => {
     console.error("Error fetching data:", error);
   });
-});
+  
+  // use netlify function to suggest user books
+const suggestionButton = document.getElementById("get-suggestion-button");
+const preferences = document.getElementById("suggestion-input");
 
-//use netlify function to suggest user books
-const suggestionButton = document.getElementById("get-suggestion-button")
-const preferences = document.getElementById("suggestion-input")
-const suggestionReciever = document.getElementById("suggestion-output")
+// New modal elements
+const suggestionModal = document.getElementById("suggestion-modal");
+const suggestionOutputPopup = document.getElementById("suggestion-output-popup");
+const closeButton = document.querySelector(".close-button");
 
 suggestionButton.addEventListener("click", async () => {
-  const preference = preferences.value
+  const preference = preferences.value;
   if (preference.trim() === "") {
-    suggestionReciever.innerHTML = "please tell me what books do you like reading"
+    suggestionOutputPopup.innerHTML = "Please tell me what books you like reading.";
+    return;
   }
-  suggestionReciever.innerHTML = "thinking"
+  
+  // Show a loading state inside the pop-up
+  suggestionOutputPopup.innerHTML = "Thinking...";
+  suggestionModal.style.display = "block"; // Display the modal
+
   try {
     const response = await fetch(
       "https://bookwyrmx.netlify.app/.netlify/functions/ai-suggester", {
         method: 'POST',
         headers: {
-          'Content-type': "application/json"
+          'Content-type': "application/json",
         },
         body: JSON.stringify({ preference: preference }),
-      })
-    
-    const suggestions = await response.json()
-    
-    if (response.ok) {
-      suggestionReciever.innerHTML = ""
-      
-      suggestionList = document.createElement("ul")
-      suggestions.forEach(book => {
-        const listItem = document.createElement("li")
-        listItem.innerHTML = `<strong>${book.title}</strong> by ${book.author}:${book.summary}`
-        suggestionList.appendChild(listItem)
-      })
-      suggestionReciever.appendChild(suggestionList)
+      });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      suggestionOutputPopup.innerHTML = `Error: ${errorData.message}`;
+      return;
     }
+
+    const suggestions = await response.json();
     
+    suggestionOutputPopup.innerHTML = ""; // Clear loading message
+    const suggestionList = document.createElement("ul");
+    suggestions.forEach(book => {
+      const listItem = document.createElement("li");
+      listItem.innerHTML = `<strong>${book.title}</strong> by ${book.author}: ${book.summary}`;
+      suggestionList.appendChild(listItem);
+    });
+    suggestionOutputPopup.appendChild(suggestionList);
+
   } catch (e) {
-    console.error("error in netlify function:", e);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-      body: JSON.stringify({ message: 'Error generating suggestions.' }),
-    };
+    console.error("Front-end fetch error:", e);
+    suggestionOutputPopup.innerHTML = "Got an unexpected error, please try again...";
   }
-})
+});
+
+// Close the modal when the close button is clicked
+closeButton.onclick = function() {
+  suggestionModal.style.display = "none";
+}
+
+// Close the modal if the user clicks anywhere outside of the modal
+window.onclick = function(event) {
+  if (event.target == suggestionModal) {
+    suggestionModal.style.display = "none";
+  }
+}
+
+});
