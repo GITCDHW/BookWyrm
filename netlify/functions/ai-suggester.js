@@ -13,7 +13,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     }
     if (event.httpMethod==='OPTIONS') {
       return{
-        statusCode=204,
+        statusCode:204,
         headers:{
           'Access-Control-Allow-Origin':"*",
           'Access-Control-Allow-Headers':"Content-Type",
