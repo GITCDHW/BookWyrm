@@ -3,7 +3,6 @@ const api_key=""
 const genAi = new GoogleGenerativeAI(api_key)
 
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
         exports.handler = async (event, context) => {
     // We only accept POST requests
     if (event.httpMethod !== 'POST') {
@@ -11,6 +10,17 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             statusCode: 405,
             body: JSON.stringify({ message: 'Method Not Allowed' }),
         };
+    }
+    if (event.httpMethod==='OPTIONS') {
+      return{
+        statusCode=204,
+        headers:{
+          'Access-Control-Allow-Origin':"*",
+          'Access-Control-Allow-Headers':"Content-Type",
+          'Access-Control-Allow-Methods':"POST,OPTIONS",
+        },
+        body:""
+      }
     }
     try {
       const {preference} = JSON.parse(event.body)
