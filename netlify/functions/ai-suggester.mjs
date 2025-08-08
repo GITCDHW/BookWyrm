@@ -64,7 +64,7 @@ exports.handler = async (event, context) => {
             }  provide that key in each json;
             DO NOT PROVIDE ANY BOOK OUTSIDE THIS DATABASE;
             Do not include any other text, explanations, or code block delimiters;
-            
+            DO NOT ADD ANY EXTRA TEXT;
             Example format:
             [
               {

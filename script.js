@@ -72,7 +72,7 @@ suggestionButton.addEventListener("click", async () => {
     const suggestionList = document.createElement("ul");
     suggestions.forEach(book => {
       const listItem = document.createElement("li");
-      listItem.innerHTML = `<strong>${book.title}</strong> by ${book.author}: ${book.summary}`;
+      listItem.innerHTML = `<strong><a href="viewpdf.html?id=${book.id}">${book.title}</a></strong> by ${book.author}: ${book.summary}`;
       suggestionList.appendChild(listItem);
     });
     suggestionOutputPopup.appendChild(suggestionList);
