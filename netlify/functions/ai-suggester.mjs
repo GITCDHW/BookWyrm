@@ -5,20 +5,20 @@ const genAi = new GoogleGenerativeAI(api_key);
 var admin = require("firebase-admin");
 var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_KEY);
 
-const initFirebase = ()=>{
-    try {
-        admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://bookwyrm-9fbfd-default-rtdb.firebaseio.com"
-});
-    } catch (e) {
-        console.log("error initialising firebase",e)
-    }
-}
-
 const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 exports.handler = async (event, context) => {
+    const initFirebase = () => {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: "https://bookwyrm-9fbfd-default-rtdb.firebaseio.com"
+        });
+    } catch (e) {
+        console.log("error initialising firebase", e)
+    }
+}
+
     initFirebase()
     const db = admin.database()
     const booksRef = db.ref("bookList")
