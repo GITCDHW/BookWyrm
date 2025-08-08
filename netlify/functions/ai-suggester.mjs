@@ -51,29 +51,35 @@ exports.handler = async (event, context) => {
 
         // A more explicit prompt to ensure a clean JSON output
         const prompt = `
-            You are a helpful assistant that suggests books;
-            Based on the following user preference, suggest 1-2 books;
-            strictly from the provided data of books: "${booksData}";
-            The user preference is: "${preference}";
-            
-            Provide the suggestions in a structured JSON format. The format should be an array of objects, with each object having 'title', 'author','summary' and 'id' keys;
-            the id key is the identifier key with which each book in the json is keyed,like this: {
-                -oa...{
-                    //book data
-                }
-            }  provide that key in each json;
-            DO NOT PROVIDE ANY BOOK OUTSIDE THIS DATABASE;
-            Do not include any other text, explanations, or code block delimiters;
-            DO NOT ADD ANY EXTRA TEXT;
-            Example format:
-            [
-              {
-                "title": "Example Title 1",
-                "author": "Example Author 1",
-                "summary": "A brief summary of the book."
-              }
-            ]
-        `;
+    You are a strict and helpful book recommender. Your only source of information is the JSON array of books provided below.
+
+    Here is the complete list of books and their details:
+    ${JSON.stringify(booksData)}
+
+    The user's preference is: "${preference}".
+
+    Based ONLY on the provided list, find books that match the user's preference.
+    
+    If you find one or more suitable books, provide a structured JSON array of objects. Each object MUST have 'id', 'title', 'author', and 'summary' keys. The 'id' is the unique identifier from the provided list.
+    
+    If you cannot find any suitable books in the provided list, you MUST return an empty JSON array, like this: [].
+    
+    You MUST NOT return any books that are not in the provided list.
+    You MUST NOT add any extra text, explanations, or code block delimiters.
+    
+    Example format for a successful match:
+    [
+      {
+        "id": "-M-aBc123XyZ",
+        "title": "Example Title 1",
+        "author": "Example Author 1",
+        "summary": "A brief summary of the book."
+      }
+    ]
+    Example format if no match is found:
+    []
+`;
+
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
