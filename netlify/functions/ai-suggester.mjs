@@ -5,10 +5,16 @@ const genAi = new GoogleGenerativeAI(api_key);
 var admin = require("firebase-admin");
 var serviceAccount = process.env.FIREBASE_SERVICE_KEY;
 
-admin.initializeApp({
+const initFirebase = ()=>{
+    try {
+        admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://bookwyrm-9fbfd-default-rtdb.firebaseio.com"
 });
+    } catch (e) {
+        console.log("error initialising firebase",e)
+    }
+}
 
 const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
 
