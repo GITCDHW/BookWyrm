@@ -3,7 +3,7 @@ const api_key = process.env.GEMINI_API_KEY ;
 const genAi = new GoogleGenerativeAI(api_key);
 
 var admin = require("firebase-admin");
-var serviceAccount = process.env.FIREBASE_SERVICE_KEY;
+var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_KEY);
 
 const initFirebase = ()=>{
     try {
