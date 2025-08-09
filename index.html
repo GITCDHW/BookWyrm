@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,62 +10,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <header>
             <div class="logo">
                 <h1>BOOK WYRM</h1>
             </div>
-<div class="prompt-input">
-    <input type="text" id="suggestion-input" placeholder="I like science books">
-    <button id="get-suggestion-button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.212L1.758 9.773 8.243 14.338 14.13 2.576z"/>
-</svg>
-</button>
-  </div>
-</div>
-
-        </header>
-                <section class="hero-section">
-            <div class="hero-image">
-                <img src="book.jpg" alt="book collage">
+            <div class="prompt-input">
+                <input type="text" id="suggestion-input" placeholder="I like science books">
+                <button id="get-suggestion-button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.212L1.758 9.773 8.243 14.338 14.13 2.576z" />
+                    </svg>
+                </button>
             </div>
-            <div class="hero-content">
-                <h2>Expand Your Knowledge By Reading A Book</h2>
-                <button class="cta-button"><a href="#featured-books">Start Exploring</a></button>
-            </div>
-        </section>
-
-
-        <section class="featured-books" id="featured-books">
-            <h3>Featured Books</h3>
-<div class="book-grid" id="featured-book-grid">
     </div>
-        </section>
-
-        <footer>
-            <div class="footer-content">
-                <h4>BOOK WYRM</h4>
-                <p>Made with love from India</p>
-                <p class="social-links-placeholder">Social Links Will Be Inserted Here</p>
-            </div>
-        </footer>
-
+    
+    </header>
+    <section class="hero-section">
+        <div class="hero-image">
+            <img src="book.jpg" alt="book collage">
+        </div>
+        <div class="hero-content">
+            <h2>Expand Your Knowledge By Reading A Book</h2>
+            <button class="cta-button"><a href="#featured-books">Start Exploring</a></button>
+        </div>
+    </section>
+    
+    
+    <section class="featured-books" id="featured-books">
+        <h3>Featured Books</h3>
+        <div class="book-grid" id="featured-book-grid">
+        </div>
+    </section>
+    <section class="featured-books" id="science-books">
+        <h3>Science: Read The Chronicles Of Human Understanding</h3>
+        <div class="book-grid" id="science-book-grid">
+        </div>
+    </section>
+    <section class="featured-books" id="philosophy-books">
+        <h3>Philosophy: Read The Quests For Wisdom</h3>
+        <div class="book-grid" id="philosophy-book-grid">
+        </div>
+    </section>
+    <footer>
+        <div class="footer-content">
+            <h4>BOOK WYRM</h4>
+            <p>Made with love from India</p>
+            <p class="social-links-placeholder">Social Links Will Be Inserted Here</p>
+        </div>
+    </footer>
+    
     </div>
     <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
-
- <script src="config.js"></script>
- <script src="script.js"></script>
- 
- <div id="suggestion-modal" class="modal">
-  <div class="modal-content">
-    <span class="close-button">&times;</span>
-    <h2>Book Suggestions</h2>
-    <div id="suggestion-output-popup"></div>
-  </div>
-</div>
-
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+    
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    
+    <div id="suggestion-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Book Suggestions</h2>
+            <div id="suggestion-output-popup"></div>
+        </div>
+    </div>
+    
 </body>
+
 </html>

@@ -31,6 +31,7 @@ body {
     background-color: var(--background-color);
     padding: 20px;
 }
+
 a{
     text-decoration: none;
     color: #000;
@@ -154,6 +155,18 @@ header {
 .featured-books, .search-by-genre {
     text-align: center;
     padding: 40px 0;
+}
+#science-books {
+    background-color: #f0f8ff; /* A light blue */
+    padding: 20px; 
+}
+
+#philosophy-books {
+    background-color: #fffaf0; /* A light yellow/cream color */
+    padding: 20px;
+}
+#philosophy-books h3,#science-books h3{
+    color:#000;
 }
 
 h3 {
