@@ -6,7 +6,7 @@ function startFirebaseUI() {
     const uiConfig = {
         signInSuccessUrl: 'index.html',
         signInOptions: [
-            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+            firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
         ],
         tosUrl: '<your-tos-url>',
         privacyPolicyUrl: '<your-privacy-policy-url>'
