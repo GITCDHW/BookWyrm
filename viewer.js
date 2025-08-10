@@ -3,14 +3,29 @@ const id = urlparams.get('id');
 const bookRef = rootRef.child(id);
 function startFirebaseUI() {
     // Configure FirebaseUI.
-    const uiConfig = {
-        signInSuccessUrl: 'index.html',
-        signInOptions: [
-            firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
-        ],
-        tosUrl: '<your-tos-url>',
-        privacyPolicyUrl: '<your-privacy-policy-url>'
-    };
+var uiConfig = {
+  signInSuccessUrl: "/viewpdf.html",
+  callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+      console.log('User signed in:', authResult.user);
+      return true;
+    },
+    uiShown: function() {
+      console.log('FirebaseUI widget shown.');
+    }
+  },
+  signInFlow: 'popup',
+  signInOptions: [{
+    provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
+    emailLinkSignIn: {
+      url: "/submit.html",
+      handleCodeInApp: true
+    }
+  }],
+  tosUrl: '/terms.html',
+  privacyPolicyUrl: '/privacy-policy.html'
+};
     
     // Initialize the FirebaseUI Widget using Firebase.
     const ui = new firebaseui.auth.AuthUI(firebase.auth());
