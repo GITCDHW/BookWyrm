@@ -220,7 +220,7 @@
                     if (snapshot.exists()) {
                         const book = snapshot.val();
                         const driveURL = `https://drive.google.com/uc?id=${book.pdfId}&export=download`;
-                        const proxyURL = `bookwyrmx.netlify.app/.netlify/functions/proxy?url=${encodeURIComponent(driveURL)}`
+                        const proxyURL = `https://bookwyrmx.netlify.app/.netlify/functions/proxy?url=${encodeURIComponent(driveURL)}`
                         loadPDF(proxyURL);
                         document.title = book.title;
                     } else {
