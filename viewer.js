@@ -1,50 +1,80 @@
+// Add this new code block at the top of your file.
+// This handles the email link sign-in process.
+if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+  let email = window.localStorage.getItem('emailForSignIn');
+  if (!email) {
+    email = window.prompt('Please provide your email for confirmation');
+  }
+  
+  firebase.auth().signInWithEmailLink(email, window.location.href)
+    .then((result) => {
+      window.localStorage.removeItem('emailForSignIn');
+      // After successful sign-in, redirect to the reader page
+      const urlParams = new URLSearchParams(window.location.search);
+      const bookId = urlParams.get('id');
+      if (bookId) {
+        window.location.href = `read.html?id=${bookId}`;
+      } else {
+        window.location.href = `index.html`;
+      }
+    })
+    .catch((error) => {
+      console.error("Error during sign-in with email link:", error);
+      window.location.href = `index.html`;
+    });
+}
+// This part is crucial for the email link method to work as a redirect.
+// It must run before any other page logic.
+
+// Original code starts here
 const urlparams = new URLSearchParams(window.location.search);
 const id = urlparams.get('id');
 const bookRef = rootRef.child(id);
+
 function startFirebaseUI() {
-    // Configure FirebaseUI.
-var uiConfig = {
-  signInSuccessUrl: "/viewpdf.html",
-  callbacks: {
-    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-      console.log('User signed in:', authResult.user);
-      return true;
+  // Configure FirebaseUI.
+  var uiConfig = {
+    signInSuccessUrl: "/viewer.html", // Change this to the current page to handle redirect
+    callbacks: {
+      signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+        console.log('User signed in:', authResult.user);
+        return true;
+      },
+      uiShown: function() {
+        console.log('FirebaseUI widget shown.');
+      }
     },
-    uiShown: function() {
-      console.log('FirebaseUI widget shown.');
-    }
-  },
-  signInFlow: 'popup',
-  signInOptions: [{
-    provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-    emailLinkSignIn: {
-      url: "/viewer.html",
-      handleCodeInApp: true
-    }
-  }],
-  tosUrl: '/terms.html',
-  privacyPolicyUrl: '/privacy-policy.html'
-};
-    
-    // Initialize the FirebaseUI Widget using Firebase.
-    const ui = new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start('#firebaseui-auth-container', uiConfig);
+    signInFlow: 'redirect', // Use 'redirect' with email links
+    signInOptions: [{
+      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+      signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
+      emailLinkSignIn: {
+        url: "/viewer.html",
+        handleCodeInApp: true
+      }
+    }],
+    tosUrl: '/terms.html',
+    privacyPolicyUrl: '/privacy-policy.html'
+  };
+  
+  // Initialize the FirebaseUI Widget using Firebase.
+  const ui = new firebaseui.auth.AuthUI(firebase.auth());
+  ui.start('#firebaseui-auth-container', uiConfig);
 }
 if (id) {
-function handleReadClick(event, bookId) {
-  event.preventDefault();
-  const user = firebase.auth().currentUser;
-  if (user) {
-    // User is signed in, redirect them
-    window.location.href = `read.html?id=${bookId}`;
-  } else {
-    // User is not signed in. Show the sign-in UI.
-    alert("Please sign in to read this book.");
-    document.querySelector(".container").style.display="none"
-    startFirebaseUI();
+  function handleReadClick(event, bookId) {
+    event.preventDefault();
+    const user = firebase.auth().currentUser;
+    if (user) {
+      // User is signed in, redirect them
+      window.location.href = `read.html?id=${bookId}`;
+    } else {
+      // User is not signed in. Show the sign-in UI.
+      alert("Please sign in to read this book.");
+      document.querySelector(".container").style.display = "none"
+      startFirebaseUI();
+    }
   }
-}
   bookRef.once("value").then(snapshot => {
     if (snapshot.exists()) {
       const bookData = snapshot.val();
@@ -63,18 +93,18 @@ function handleReadClick(event, bookId) {
       
       // This check will now be accurate because the description is in the DOM
       if (bookDescription.scrollHeight > bookDescription.clientHeight) {
-          toggleButton.style.display = 'block'; // Show the button if needed
+        toggleButton.style.display = 'block'; // Show the button if needed
       } else {
-          toggleButton.style.display = 'none'; // Hide if not needed
+        toggleButton.style.display = 'none'; // Hide if not needed
       }
       
       toggleButton.addEventListener('click', function() {
-          descriptionContainer.classList.toggle('expanded');
-          if (descriptionContainer.classList.contains('expanded')) {
-              toggleButton.textContent = 'Read less';
-          } else {
-              toggleButton.textContent = 'Read more';
-          }
+        descriptionContainer.classList.toggle('expanded');
+        if (descriptionContainer.classList.contains('expanded')) {
+          toggleButton.textContent = 'Read less';
+        } else {
+          toggleButton.textContent = 'Read more';
+        }
       });
       
     } else {
