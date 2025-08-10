@@ -13,7 +13,7 @@ if (id) {
       const bookDescription = document.getElementById("description");
       bookDescription.innerHTML = bookData.description;
       
-      document.querySelector(".read-button").href = `https://drive.google.com/uc?id=${bookData.pdfId}&export=download`;
+      document.querySelector(".read-button").href = `read.html?id=${id}`;
       
       // Now, perform the toggle logic after the description is loaded
       const toggleButton = document.getElementById('toggle-button');

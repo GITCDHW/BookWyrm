@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookwyrm Reader</title>
+
+    <style>
+        /* Embed all CSS directly in the file */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #pdf-viewer-container {
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: auto;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+
+        #pdf-canvas {
+            display: block;
+            margin: 0 auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+        .controls button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #page-info {
+            font-weight: 500;
+        }
+
+        #loading-message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #555;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pdf-viewer-container">
+        <div id="loading-message">Loading book...</div>
+        <canvas id="pdf-canvas"></canvas>
+    </div>
+
+    <div class="controls">
+        <button id="prev-page-btn" disabled>Previous Page</button>
+        <span id="page-info">Page: </span>
+        <button id="next-page-btn" disabled>Next Page</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+
+    <script>
+        // PDF.js worker source must be set
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5,
+            canvas = document.getElementById('pdf-canvas'),
+            ctx = canvas.getContext('2d'),
+            pdfViewerContainer = document.getElementById('pdf-viewer-container'),
+            prevBtn = document.getElementById('prev-page-btn'),
+            nextBtn = document.getElementById('next-page-btn'),
+            pageInfoSpan = document.getElementById('page-info'),
+            loadingMessage = document.getElementById('loading-message');
+            
+        let bookId, userId;
+
+        // Function to render the specified page
+        function renderPage(num) {
+            pageRendering = true;
+            loadingMessage.style.display = 'block';
+
+            pdfDoc.getPage(num).then(function(page) {
+                let viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                let renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                let renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    loadingMessage.style.display = 'none';
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+
+                // Update controls
+                pageInfoSpan.textContent = `Page: ${pageNum} of ${pdfDoc.numPages}`;
+                prevBtn.disabled = (pageNum <= 1);
+                nextBtn.disabled = (pageNum >= pdfDoc.numPages);
+
+                // Save reading progress to Firebase
+                if (userId) {
+                    const userRef = firebase.database().ref(`users/${userId}/readingHistory/${bookId}`);
+                    userRef.set({
+                        lastReadPage: pageNum,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            });
+        }
+
+        // Function to queue page rendering
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        // Event listeners for page navigation buttons
+        prevBtn.addEventListener('click', function() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        });
+
+        // Main function to load the PDF
+        function loadPDF(pdfUrl) {
+            loadingMessage.textContent = 'Loading book...';
+            prevBtn.disabled = nextBtn.disabled = true;
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                pdfDoc = pdf;
+
+                // Load reading progress if a user is logged in
+                if (userId) {
+                    const userRef = firebase.database().ref(`users/${userId}/readingHistory/${bookId}`);
+                    userRef.once('value').then(snapshot => {
+                        if (snapshot.exists() && snapshot.val().lastReadPage) {
+                            pageNum = snapshot.val().lastReadPage;
+                        }
+                        renderPage(pageNum);
+                    });
+                } else {
+                    renderPage(pageNum);
+                }
+            }).catch(function(error) {
+                console.error("Error loading PDF:", error);
+                loadingMessage.textContent = 'Error loading book. Please try again.';
+            });
+        }
+        
+        // Initial setup on page load
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                userId = user.uid;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            bookId = urlParams.get('id');
+
+            if (bookId) {
+                const bookRef = db.ref(`bookList/${bookId}`);
+                bookRef.once("value").then(snapshot => {
+                    if (snapshot.exists()) {
+                        const book = snapshot.val();
+                        loadPDF(`https://drive.google.com/uc?id=${book.pdfId}&export=download`);
+                        document.title = book.title;
+                    } else {
+                        loadingMessage.textContent = 'Book not found.';
+                    }
+                }).catch(error => {
+                    console.error("Error fetching book data:", error);
+                    loadingMessage.textContent = 'Error fetching book data.';
+                });
+            } else {
+                loadingMessage.textContent = 'No book selected.';
+            }
+        });
+    </script>
+</body>
+</html>
