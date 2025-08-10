@@ -1,8 +1,35 @@
 const urlparams = new URLSearchParams(window.location.search);
 const id = urlparams.get('id');
 const bookRef = rootRef.child(id);
-
+function startFirebaseUI() {
+    // Configure FirebaseUI.
+    const uiConfig = {
+        signInSuccessUrl: 'index.html',
+        signInOptions: [
+            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        ],
+        tosUrl: '<your-tos-url>',
+        privacyPolicyUrl: '<your-privacy-policy-url>'
+    };
+    
+    // Initialize the FirebaseUI Widget using Firebase.
+    const ui = new firebaseui.auth.AuthUI(firebase.auth());
+    ui.start('#firebaseui-auth-container', uiConfig);
+}
 if (id) {
+function handleReadClick(event, bookId) {
+  event.preventDefault();
+  const user = firebase.auth().currentUser;
+  if (user) {
+    // User is signed in, redirect them
+    window.location.href = `read.html?id=${bookId}`;
+  } else {
+    // User is not signed in. Show the sign-in UI.
+    alert("Please sign in to read this book.");
+    document.querySelector(".container").style.display="none"
+    startFirebaseUI();
+  }
+}
   bookRef.once("value").then(snapshot => {
     if (snapshot.exists()) {
       const bookData = snapshot.val();
@@ -13,7 +40,7 @@ if (id) {
       const bookDescription = document.getElementById("description");
       bookDescription.innerHTML = bookData.description;
       
-      document.querySelector(".read-button").href = `read.html?id=${id}`;
+      document.querySelector(".read-button").onclick = handleReadClick;
       
       // Now, perform the toggle logic after the description is loaded
       const toggleButton = document.getElementById('toggle-button');
