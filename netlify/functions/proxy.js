@@ -9,6 +9,8 @@ exports.handler = async (event) => {
         }
 
         const response = await fetch(url);
+        
+        // This is the key change: get the raw binary data
         const data = await response.buffer();
         const contentType = response.headers.get('content-type');
 
@@ -16,12 +18,14 @@ exports.handler = async (event) => {
             statusCode: 200,
             headers: {
                 'Content-Type': contentType,
-                'Access-Control-Allow-Origin': '*' // This is key for CORS
+                'Access-Control-Allow-Origin': '*'
             },
+            // The data must be encoded in base64 to be sent via a serverless function response body
             body: data.toString('base64'),
             isBase64Encoded: true
         };
     } catch (error) {
+        console.error('Error in proxy function:', error);
         return { statusCode: 500, body: 'Error fetching resource.' };
     }
 };
