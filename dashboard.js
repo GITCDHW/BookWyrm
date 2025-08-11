@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const bookData=bookList[id]
             const bookItem = document.createElement("div")
             bookItem.setAttribute("class",".book-list-item")
-            bookItem.innerHTML=`<img class="book-cover-small" src=${bookItem.coverLink}>`
+            bookItem.innerHTML=`<img class="book-cover-small" src=${bookItem.coverUrl}>`
           })
         }
       })
