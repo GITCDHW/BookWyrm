@@ -27,8 +27,7 @@ const urlparams = new URLSearchParams(window.location.search);
 const id = urlparams.get('id');
 const bookRef = rootRef.child(id);
 if (id) {
-  function handleReadClick(event, bookId) {
-    event.preventDefault();
+  function handleReadClick(bookId) {
     const user = firebase.auth().currentUser;
     if (user) {
       // User is signed in, redirect them
@@ -50,7 +49,7 @@ if (id) {
       const bookDescription = document.getElementById("description");
       bookDescription.innerHTML = bookData.description;
       
-      document.querySelector(".read-button").onclick = handleReadClick;
+      document.querySelector(".read-button").onclick = function(){handleReadClick(id)};
       
       // Now, perform the toggle logic after the description is loaded
       const toggleButton = document.getElementById('toggle-button');
