@@ -94,6 +94,7 @@
     <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-database-compat.js"></script>
+    
     <script src="config.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
@@ -181,14 +182,34 @@
         });
         
         // Main function to load the PDF
-        function loadPDF(pdfUrl) {
-            loadingMessage.textContent = 'Loading book...';
-            prevBtn.disabled = nextBtn.disabled = true;
+function loadPDF(pdfUrl) {
+    loadingMessage.textContent = 'Loading book...';
+    prevBtn.disabled = nextBtn.disabled = true;
+
+    // Use fetch to get the Base64-encoded data from your proxy function
+    fetch(pdfUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text(); // Get the response as text (the Base64 string)
+        })
+        .then(base64Data => {
+            // Decode the Base64 string to a binary string
+            const binaryString = atob(base64Data);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
             
-            pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+            // Convert the binary string to a Uint8Array
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            // Now pass the Uint8Array to PDF.js
+            pdfjsLib.getDocument({ data: bytes }).promise.then(function(pdf) {
                 pdfDoc = pdf;
                 
-                // Load reading progress if a user is logged in
+                // Load reading progress... (rest of your existing logic)
                 if (userId) {
                     const userRef = firebase.database().ref(`users/${userId}/readingHistory/${bookId}`);
                     userRef.once('value').then(snapshot => {
@@ -201,10 +222,16 @@
                     renderPage(pageNum);
                 }
             }).catch(function(error) {
-                console.error("Error loading PDF:", error);
+                console.error("Error loading PDF with PDF.js:", error);
                 loadingMessage.textContent = 'Error loading book. Please try again.';
             });
-        }
+        })
+        .catch(function(error) {
+            console.error("Error fetching PDF data from proxy:", error);
+            loadingMessage.textContent = 'Error fetching book data.';
+        });
+}
+
         
         // Initial setup on page load
         firebase.auth().onAuthStateChanged(user => {
