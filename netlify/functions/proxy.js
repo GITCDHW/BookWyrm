@@ -1,7 +1,19 @@
-// .netlify/functions/proxy.js
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
+    // Handle the preflight OPTIONS request
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'GET'
+            },
+            body: ''
+        };
+    }
+
     try {
         const url = event.queryStringParameters.url;
         if (!url) {
@@ -20,7 +32,6 @@ exports.handler = async (event) => {
                 'Content-Type': contentType,
                 'Access-Control-Allow-Origin': '*'
             },
-            // The data must be encoded in base64 to be sent via a serverless function response body
             body: data.toString('base64'),
             isBase64Encoded: true
         };
