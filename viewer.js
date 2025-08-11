@@ -1,5 +1,4 @@
-// Add this new code block at the top of your file.
-// This handles the email link sign-in process.
+
 if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
   let email = window.localStorage.getItem('emailForSignIn');
   if (!email) {
@@ -9,11 +8,12 @@ if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
   firebase.auth().signInWithEmailLink(email, window.location.href)
     .then((result) => {
       window.localStorage.removeItem('emailForSignIn');
-      // After successful sign-in, redirect to the reader page
-      const urlParams = new URLSearchParams(window.location.search);
-      const bookId = urlParams.get('id');
+
+      const bookId = window.localStorage.getItem('bookIdForRedirect');
       if (bookId) {
-        window.location.href = `read.html?id=${bookId}`;
+        window.localStorage.removeItem('bookIdForRedirect');
+
+        window.location.href = `viewer.html?id=${bookId}`;
       } else {
         window.location.href = `index.html`;
       }
@@ -33,9 +33,11 @@ if (id) {
       // User is signed in, redirect them
       window.location.href = `read.html?id=${bookId}`;
     } else {
-      // User is not signed in. Show the sign-in UI.
+      // User is not signed in. Store the ID and show the sign-in UI.
       alert("Please sign in to read this book.");
       document.querySelector(".container").style.display = "none"
+
+      window.localStorage.setItem('bookIdForRedirect', bookId);
       startFirebaseUI("viewer.js");
     }
   }
@@ -45,21 +47,18 @@ if (id) {
       document.getElementById("image").src = bookData.coverUrl;
       document.getElementById("title").innerHTML = bookData.title;
       
-      // Corrected: The ID of the description paragraph is "description"
       const bookDescription = document.getElementById("description");
       bookDescription.innerHTML = bookData.description;
       
       document.querySelector(".read-button").onclick = function(){handleReadClick(id)};
       
-      // Now, perform the toggle logic after the description is loaded
       const toggleButton = document.getElementById('toggle-button');
       const descriptionContainer = document.querySelector('.description-container');
       
-      // This check will now be accurate because the description is in the DOM
       if (bookDescription.scrollHeight > bookDescription.clientHeight) {
-        toggleButton.style.display = 'block'; // Show the button if needed
+        toggleButton.style.display = 'block';
       } else {
-        toggleButton.style.display = 'none'; // Hide if not needed
+        toggleButton.style.display = 'none';
       }
       
       toggleButton.addEventListener('click', function() {
