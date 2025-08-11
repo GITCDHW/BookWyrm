@@ -1,30 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
-  auth.onAuthStateChanged(user => {
+  firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      const userId = user.uid
-      const userRef = db.ref(`users/${userId}`)
-      
-      const booksRef = db.ref("bookList")
-      
-      booksRef.once("value").then(allBookSnapshot=>{
-        
-        const bookList = allBookSnapshot.val()
-        
-        userRef.child("readingHistory").once("value").then((snapshot) => {
-        if (snapshot.exists()) {
-          const history = snapshot.val()
-          Object.keys(history).forEach(id=>{
-            const bookData=bookList[id]
-            const bookItem = document.createElement("div")
-            bookItem.setAttribute("class",".book-list-item")
-            bookItem.innerHTML=`<img class="book-cover-small" src=${bookItem.coverUrl}>`
-          })
-        }
-      })
-      })
+      const userId = user.uid; // Correct: user.uid
+      const userRef = firebase.database().ref(`users/${userId}`);
+      const booksRef = firebase.database().ref("bookList");
+
+      // Fetch all book data first (efficient)
+      booksRef.once("value").then(allBookSnapshot => {
+        const bookList = allBookSnapshot.val();
+
+        // Fetch user's reading history, ordered by timestamp
+        userRef.child("readingHistory").orderByChild('timestamp').once("value").then((historySnapshot) => {
+          if (historySnapshot.exists()) {
+            const readingHistoryList = document.getElementById("reading-history-list");
+            const historyData = historySnapshot.val();
+            
+            let isFirst = true; // Flag for the "Continue Reading" section
+
+            // Use Object.keys to iterate over the history object
+            Object.keys(historyData).reverse().forEach(bookId => { // Reverse to get most recent first
+                const bookData = bookList[bookId];
+                const lastReadPage = historyData[bookId].lastReadPage;
+
+                if (bookData) {
+                    // Logic for "Continue Reading" section (only the most recent book)
+                    if (isFirst) {
+                        document.getElementById('continue-cover').src = bookData.coverUrl;
+                        document.getElementById('continue-title').textContent = bookData.title;
+                        document.getElementById('continue-page').textContent = `Last read: Page ${lastReadPage}`;
+                        document.getElementById('continue-button').onclick = () => {
+                            window.location.href = `read.html?id=${bookId}`;
+                        };
+                        document.getElementById('continue-reading-card').style.display = 'flex';
+                        isFirst = false;
+                    }
+
+                    // Logic for the reading history list
+                    const listItem = document.createElement("a");
+                    listItem.classList.add("book-list-item"); // Corrected: removed dot
+                    listItem.href = `read.html?id=${bookId}`;
+                    listItem.innerHTML = `
+                        <img class="book-cover-small" src="${bookData.coverUrl}">
+                        <div class="list-item-content">
+                            <h4>${bookData.title}</h4>
+                            <p>Last read: Page ${lastReadPage}</p>
+                        </div>
+                    `;
+                    readingHistoryList.appendChild(listItem);
+                }
+            });
+          }
+        });
+      });
     } else {
-      document.querySelector(".dashboard-container").style.display = "none"
-      startFirebaseUI("dashboard.html")
+      document.querySelector(".dashboard-container").style.display = "none";
+      // Assuming startFirebaseUI is a function that takes a URL
+      startFirebaseUI("/user_dashboard.html"); 
     }
-  })
-})
+  });
+});
