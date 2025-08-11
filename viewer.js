@@ -23,44 +23,9 @@ if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
       window.location.href = `index.html`;
     });
 }
-// This part is crucial for the email link method to work as a redirect.
-// It must run before any other page logic.
-
-// Original code starts here
 const urlparams = new URLSearchParams(window.location.search);
 const id = urlparams.get('id');
 const bookRef = rootRef.child(id);
-
-function startFirebaseUI() {
-  // Configure FirebaseUI.
-  var uiConfig = {
-    signInSuccessUrl: "/viewer.html", // Change this to the current page to handle redirect
-    callbacks: {
-      signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-        console.log('User signed in:', authResult.user);
-        return true;
-      },
-      uiShown: function() {
-        console.log('FirebaseUI widget shown.');
-      }
-    },
-    signInFlow: 'redirect', // Use 'redirect' with email links
-    signInOptions: [{
-      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-      emailLinkSignIn: {
-        url: "/viewer.html",
-        handleCodeInApp: true
-      }
-    }],
-    tosUrl: '/terms.html',
-    privacyPolicyUrl: '/privacy-policy.html'
-  };
-  
-  // Initialize the FirebaseUI Widget using Firebase.
-  const ui = new firebaseui.auth.AuthUI(firebase.auth());
-  ui.start('#firebaseui-auth-container', uiConfig);
-}
 if (id) {
   function handleReadClick(event, bookId) {
     event.preventDefault();
