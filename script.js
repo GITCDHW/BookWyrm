@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const wrapper = document.getElementById("wrapper")
+const loader = document.getElementById("load-container")
+
   const featuredBooksGrid = document.getElementById('featured-book-grid');
   const scienceBooksGrid = document.getElementById('science-book-grid');
   const philosophyBooksGrid = document.getElementById('philosophy-book-grid');
@@ -43,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scienceBookItem.innerHTML = `<a href="viewpdf.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
         scienceBooksGrid.appendChild(scienceBookItem);
       });
-
+      
       // Render Philosophy books
       philosophyBooks.slice(0, maxCategoryBooks).forEach(book => {
         const philosophyBookItem = document.createElement("div");
@@ -51,10 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
         philosophyBookItem.innerHTML = `<a href="viewpdf.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
         philosophyBooksGrid.appendChild(philosophyBookItem);
       });
-      
     } else {
       console.log("No books found in the database.");
     }
+    setTimeout(() => {
+      wrapper.style.display = "block"
+      loader.style.display = "none"
+    }, 100)
   }).catch(error => {
     console.error("Error fetching data:", error);
   });
@@ -77,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     suggestionOutputPopup.innerHTML = "Thinking...";
     suggestionModal.style.display = "block";
-  
+    
     try {
       const response = await fetch(
         "https://bookwyrmx.netlify.app/.netlify/functions/ai-suggester", {
@@ -87,13 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           body: JSON.stringify({ preference: preference }),
         });
-  
+      
       if (!response.ok) {
         const errorData = await response.json();
         suggestionOutputPopup.innerHTML = `Error: ${errorData.message}`;
         return;
       }
-  
+      
       const suggestions = await response.json();
       
       suggestionOutputPopup.innerHTML = "";
@@ -108,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         suggestionOutputPopup.appendChild(suggestionList);
       }
-  
+      
     } catch (e) {
       console.error("Front-end fetch error:", e);
       suggestionOutputPopup.innerHTML = "Got an unexpected error, please try again...";
