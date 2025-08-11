@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("load-container")
+  const wrapper = document.getElementById("dashboard-container")
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
       const userId = user.uid; // Correct: user.uid
