@@ -1,7 +1,7 @@
-function startFirebaseUI() {
+function startFirebaseUI(url) {
   // Configure FirebaseUI.
   var uiConfig = {
-    signInSuccessUrl: "/viewer.html", 
+    signInSuccessUrl: url, 
     callbacks: {
       signInSuccessWithAuthResult: function(authResult, redirectUrl) {
         return true;

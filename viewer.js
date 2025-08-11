@@ -37,7 +37,7 @@ if (id) {
       // User is not signed in. Show the sign-in UI.
       alert("Please sign in to read this book.");
       document.querySelector(".container").style.display = "none"
-      startFirebaseUI();
+      startFirebaseUI("viewer.js");
     }
   }
   bookRef.once("value").then(snapshot => {
