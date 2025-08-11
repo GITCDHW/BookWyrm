@@ -3,9 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (user) {
       const userId = user.uid; // Correct: user.uid
       const userRef = firebase.database().ref(`users/${userId}`);
+      userRef.once("value").then(snapshot=>{
+        const userData = snapshot.val()
+        const email = userData.email
+        document.getElementById("welcome-message").innerHTML=`hello,${email.split("@")[0]}`
+      })
       const booksRef = firebase.database().ref("bookList");
 
-      // Fetch all book data first (efficient)
       booksRef.once("value").then(allBookSnapshot => {
         const bookList = allBookSnapshot.val();
 
@@ -37,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Logic for the reading history list
                     const listItem = document.createElement("a");
-                    listItem.classList.add("book-list-item"); // Corrected: removed dot
+                    listItem.classList.add("book-list-item");
                     listItem.href = `read.html?id=${bookId}`;
                     listItem.innerHTML = `
                         <img class="book-cover-small" src="${bookData.coverUrl}">
