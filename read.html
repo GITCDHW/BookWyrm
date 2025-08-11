@@ -259,8 +259,10 @@ function loadPDF(pdfUrl) {
                 bookRef.once("value").then(snapshot => {
                     if (snapshot.exists()) {
                         const book = snapshot.val();
-                        const driveURL = `https://drive.google.com/uc?id=${book.pdfId}&export=download`;
-                        const proxyURL = `https://bookwyrmx.netlify.app/.netlify/functions/proxy?url=${encodeURIComponent(driveURL)}`
+                        const // In your client-side JavaScript
+const driveURL = `https://docs.google.com/uc?id=${book.pdfId}&export=download`;
+const proxyURL = `https://bookwyrmx.netlify.app/.netlify/functions/proxy?url=${encodeURIComponent(driveURL)}`;
+
                         loadPDF(proxyURL);
                         alert(proxyURL)
                         document.title = book.title;
