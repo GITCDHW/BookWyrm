@@ -215,7 +215,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             bookId = urlParams.get('id');
             if (bookId) {
-                const bookRef = db.ref(`bookList/${bookId}`);
+                const bookRef = rootRef.child(bookId);
                 bookRef.once("value").then(snapshot => {
                     if (snapshot.exists()) {
                         const book = snapshot.val();
