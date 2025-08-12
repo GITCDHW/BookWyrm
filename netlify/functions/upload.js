@@ -66,8 +66,8 @@ exports.handler = async (event, context) => {
         // --- Upload PDF file to Cloudinary ---
         const cloudinaryPdfFormData = new FormData();
         cloudinaryPdfFormData.append('file', `data:${files.pdfFile.mimeType};base64,${files.pdfFile.buffer.toString('base64')}`);
-        cloudinaryPdfFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        cloudinaryPdfFormData.append('folder', 'bookwyrm_pdfs');
+        cloudinaryPdfFormData.append('upload_preset',process.env.UPLOAD_PRESET);
+        cloudinaryPdfFormData.append('folder', process.env.UPLOAD_PRESET);
         cloudinaryPdfFormData.append('resource_type', 'raw'); 
 
         uploadPromises.push(axios.post(
