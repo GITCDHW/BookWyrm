@@ -2,10 +2,10 @@ const Busboy = require('busboy');
 const axios = require('axios');
 const FormData = require('form-data');
 
-const IMGBB_API_KEY = "e27ce0c471c6edcdf98e57c4697c4cff";
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 
-const CLOUDINARY_CLOUD_NAME = "db2hfiqln";
-const CLOUDINARY_UPLOAD_PRESET = "bookwyrm_pdfs"; 
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = process.env.UPLOAD_PRESET; 
 
 exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') {
