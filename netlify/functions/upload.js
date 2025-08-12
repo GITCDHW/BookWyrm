@@ -29,8 +29,14 @@ exports.handler = async (event, context) => {
 
   return new Promise((resolve, reject) => {
     const files = {};
+    const fields = {};
+
+    busboy.on('field', (fieldname, val) => {
+      fields[fieldname] = val;
+    });
 
     busboy.on('file', (fieldname, file, filename) => {
+      console.log(`Receiving file: ${filename.filename}`);
       const buffer = [];
       file.on('data', data => {
         buffer.push(data);
@@ -44,9 +50,32 @@ exports.handler = async (event, context) => {
       });
     });
 
+    // CRUCIAL: Add a busboy error handler
+    busboy.on('error', (err) => {
+      console.error('Busboy parsing error:', err);
+      resolve({
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Busboy failed to parse form data.', details: err.message }),
+      });
+    });
+
     busboy.on('finish', async () => {
+      console.log('Busboy finished parsing. Files:', Object.keys(files));
+      
+      // Check if required files are present after parsing
       if (!files.coverImage || !files.pdfFile) {
-        return resolve({ statusCode: 400, body: 'Missing cover image or PDF file.' });
+        return resolve({ 
+          statusCode: 400, 
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ error: 'Missing cover image or PDF file.' }) 
+        });
       }
 
       try {
@@ -56,19 +85,22 @@ exports.handler = async (event, context) => {
         // --- Upload cover image to ImgBB ---
         const imgbbFormData = new FormData();
         imgbbFormData.append('image', files.coverImage.buffer, { filename: 'cover.jpg' });
+        console.log('Starting ImgBB upload...');
 
         uploadPromises.push(axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, imgbbFormData, {
           headers: imgbbFormData.getHeaders(),
         }).then(response => {
           coverUrl = response.data.data.url;
+          console.log('ImgBB upload successful.');
         }));
 
         // --- Upload PDF file to Cloudinary ---
         const cloudinaryPdfFormData = new FormData();
         cloudinaryPdfFormData.append('file', `data:${files.pdfFile.mimeType};base64,${files.pdfFile.buffer.toString('base64')}`);
-        cloudinaryPdfFormData.append('upload_preset',process.env.UPLOAD_PRESET);
-        cloudinaryPdfFormData.append('folder', process.env.UPLOAD_PRESET);
+        cloudinaryPdfFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        cloudinaryPdfFormData.append('folder', 'bookwyrmx-pdfs'); // Use a different folder name
         cloudinaryPdfFormData.append('resource_type', 'raw'); 
+        console.log('Starting Cloudinary upload...');
 
         uploadPromises.push(axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
@@ -76,9 +108,11 @@ exports.handler = async (event, context) => {
           { headers: cloudinaryPdfFormData.getHeaders() }
         ).then(response => {
           pdfUrl = response.data.secure_url;
+          console.log('Cloudinary upload successful.');
         }));
 
         await Promise.all(uploadPromises);
+        console.log('All uploads completed. Resolving with URLs.');
 
         resolve({
           statusCode: 200,
@@ -86,17 +120,20 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl, pdfUrl }),
+          body: JSON.stringify({ coverUrl, pdfUrl, fields }),
         });
       } catch (error) {
         console.error('File Upload Error:', error.response ? error.response.data : error);
-        return resolve({
+        resolve({
           statusCode: error.response ? error.response.status : 500,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ error: 'File upload failed.', details: error.message }),
+          body: JSON.stringify({ 
+            error: 'File upload failed.', 
+            details: error.response && error.response.data ? error.response.data : error.message 
+          }),
         });
       }
     });
@@ -104,4 +141,3 @@ exports.handler = async (event, context) => {
     busboy.end(Buffer.from(event.body, 'base64'));
   });
 };
-
