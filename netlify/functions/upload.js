@@ -89,14 +89,14 @@ exports.handler = async (event, context) => {
           body: JSON.stringify({ coverUrl, pdfUrl }),
         });
       } catch (error) {
-        console.error('File Upload Error:', error);
-        resolve({
-          statusCode: 500,
+        console.error('File Upload Error:', error.response ? error.response.data : error);
+        return resolve({
+          statusCode: error.response ? error.response.status : 500,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ error: 'File upload failed.' }),
+          body: JSON.stringify({ error: 'File upload failed.', details: error.message }),
         });
       }
     });
@@ -104,3 +104,4 @@ exports.handler = async (event, context) => {
     busboy.end(Buffer.from(event.body, 'base64'));
   });
 };
+
