@@ -1,9 +1,11 @@
 document.getElementById('sign_in_ui').style.display = 'none';
 const title = document.getElementById("title");
 const description = document.getElementById("description");
-const coverFile = document.getElementById("cover-file"); // Correctly reference the new file input
-const pdfLink = document.getElementById("pdf-link");
+const coverFile = document.getElementById("cover-file");
+const pdfFile = document.getElementById("pdf-file"); // New PDF file input
 const form = document.getElementById("form");
+const submitButton = document.querySelector(".submit-button");
+
 var ui = new firebaseui.auth.AuthUI(auth);
 
 var uiConfig = {
@@ -46,21 +48,25 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   let user = firebase.auth().currentUser;
 
-  const file = coverFile.files[0];
-  const pdfId = extractDriveId(pdfLink.value);
+  const coverImageFile = coverFile.files[0];
+  const pdfDocumentFile = pdfFile.files[0]; // Get the PDF file
 
   if (!user) {
     alert("You must be signed in");
     return;
-  } else if (!title.value || !file || !pdfId) {
+  } else if (!title.value || !coverImageFile || !pdfDocumentFile) {
     alert("Please provide all the details!");
     return;
   }
 
+  submitButton.disabled = true;
+  submitButton.textContent = 'Submitting...';
+
   const functionUrl = `https://bookwyrmx.netlify.app/.netlify/functions/upload`;
 
   const formData = new FormData();
-  formData.append('coverImage', file);
+  formData.append('coverImage', coverImageFile);
+  formData.append('pdfFile', pdfDocumentFile); // Append the PDF file
 
   try {
     const response = await fetch(functionUrl, {
@@ -70,16 +76,16 @@ form.addEventListener("submit", async (e) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to upload image');
+      throw new Error(errorData.error || 'Failed to upload files via Netlify function');
     }
 
-    const { coverUrl } = await response.json();
+    const { coverUrl, pdfUrl } = await response.json(); // Expect both URLs
 
     const bookData = {
       title: title.value,
       description: description.value,
       coverUrl: coverUrl,
-      pdfId: pdfId
+      pdfUrl: pdfUrl // Store the new PDF URL
     };
 
     await rootRef.push(bookData);
@@ -88,14 +94,8 @@ form.addEventListener("submit", async (e) => {
   } catch (error) {
     console.error("Submission error:", error);
     alert("An error occurred: " + error.message);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Submit Book';
   }
 });
-
-function extractDriveId(url) {
-  const regex = /(?:drive\.google\.com\/file\/d\/|drive\.google\.com\/drive\/folders\/|docs\.google\.com\/document\/d\/|sheets\.google\.com\/spreadsheets\/d\/)([a-zA-Z0-9_-]+)/;
-  const match = url.match(regex);
-  if (match && match[1]) {
-    return match[1];
-  }
-  return null;
-}

@@ -2,11 +2,14 @@ const Busboy = require('busboy');
 const axios = require('axios');
 const FormData = require('form-data');
 
-// Replace this with your ImgBB API key. You can get a free one from imgbb.com.
-const IMGBB_API_KEY = 'e27ce0c471c6edcdf98e57c4697c4cff';
+// Replace this with your ImgBB API key.
+const IMGBB_API_KEY = "e27ce0c 471c6edcdf98e57c4697c4cff";
+
+// Use your Cloudinary credentials from your Netlify environment variables.
+const CLOUDINARY_CLOUD_NAME = db2hfiqln;
+const CLOUDINARY_UPLOAD_PRESET = "bookwyrm_pdfs"; 
 
 exports.handler = async (event, context) => {
-  // Handle CORS pre-flight requests from the browser
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 204,
@@ -20,63 +23,82 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Ensure only POST requests are allowed
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  // Parse the file from the request body using Busboy
   const busboy = Busboy({ headers: { 'content-type': event.headers['content-type'] } });
 
   return new Promise((resolve, reject) => {
-    let fileBuffer = null;
+    const files = {};
 
     busboy.on('file', (fieldname, file, filename) => {
-      // Collect the file data in a buffer
       const buffer = [];
       file.on('data', data => {
         buffer.push(data);
       });
       file.on('end', () => {
-        fileBuffer = Buffer.concat(buffer);
+        files[fieldname] = {
+          buffer: Buffer.concat(buffer),
+          filename: filename.filename,
+          mimeType: filename.mimeType,
+        };
       });
     });
 
     busboy.on('finish', async () => {
-      if (!fileBuffer) {
-        return resolve({ statusCode: 400, body: 'No file uploaded.' });
+      if (!files.coverImage || !files.pdfFile) {
+        return resolve({ statusCode: 400, body: 'Missing cover image or PDF file.' });
       }
 
       try {
-        // Create form data for the ImgBB upload API
-        const formData = new FormData();
-        formData.append('image', fileBuffer, { filename: 'cover.jpg' });
+        const uploadPromises = [];
+        let coverUrl, pdfUrl;
 
-        const response = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData, {
-          headers: formData.getHeaders(),
-        });
+        // --- Upload cover image to ImgBB ---
+        const imgbbFormData = new FormData();
+        imgbbFormData.append('image', files.coverImage.buffer, { filename: 'cover.jpg' });
 
-        // Get the public URL from the ImgBB response
-        const coverUrl = response.data.data.url;
+        uploadPromises.push(axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, imgbbFormData, {
+          headers: imgbbFormData.getHeaders(),
+        }).then(response => {
+          coverUrl = response.data.data.url;
+        }));
 
-        // Respond with the URL and CORS headers
+        // --- Upload PDF file to Cloudinary ---
+        const cloudinaryPdfFormData = new FormData();
+        cloudinaryPdfFormData.append('file', `data:${files.pdfFile.mimeType};base64,${files.pdfFile.buffer.toString('base64')}`);
+        cloudinaryPdfFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        cloudinaryPdfFormData.append('folder', 'bookwyrm_pdfs');
+        cloudinaryPdfFormData.append('resource_type', 'raw'); 
+
+        uploadPromises.push(axios.post(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
+          cloudinaryPdfFormData,
+          { headers: cloudinaryPdfFormData.getHeaders() }
+        ).then(response => {
+          pdfUrl = response.data.secure_url;
+        }));
+
+        await Promise.all(uploadPromises);
+
         resolve({
           statusCode: 200,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl }),
+          body: JSON.stringify({ coverUrl, pdfUrl }),
         });
       } catch (error) {
-        console.error('ImgBB Upload Error:', error);
+        console.error('File Upload Error:', error);
         resolve({
           statusCode: 500,
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ error: 'Image upload failed.' }),
+          body: JSON.stringify({ error: 'File upload failed.' }),
         });
       }
     });
@@ -84,4 +106,3 @@ exports.handler = async (event, context) => {
     busboy.end(Buffer.from(event.body, 'base64'));
   });
 };
-      
