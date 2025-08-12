@@ -100,7 +100,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
 
     <script>
-        // PDF.js worker source must be set
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 
         let pdfDoc = null,
@@ -118,7 +117,6 @@
 
         let bookId, userId;
 
-        // Function to render the specified page
         function renderPage(num) {
             pageRendering = true;
             loadingMessage.style.display = 'block';
@@ -145,12 +143,10 @@
                     }
                 });
 
-                // Update controls
                 pageInfoSpan.textContent = `Page: ${pageNum} of ${pdfDoc.numPages}`;
                 prevBtn.disabled = (pageNum <= 1);
                 nextBtn.disabled = (pageNum >= pdfDoc.numPages);
 
-                // Save reading progress to Firebase
                 if (userId) {
                     const userRef = firebase.database().ref(`users/${userId}/readingHistory/${bookId}`);
                     userRef.set({
@@ -161,7 +157,6 @@
             });
         }
 
-        // Function to queue page rendering
         function queueRenderPage(num) {
             if (pageRendering) {
                 pageNumPending = num;
@@ -170,7 +165,6 @@
             }
         }
 
-        // Event listeners for page navigation buttons
         prevBtn.addEventListener('click', function() {
             if (pageNum <= 1) return;
             pageNum--;
@@ -183,14 +177,10 @@
             queueRenderPage(pageNum);
         });
 
-        // Main function to load the PDF
         function loadPDF(pdfUrl) {
             loadingMessage.textContent = 'Loading book...';
             prevBtn.disabled = nextBtn.disabled = true;
 
-            alert('1. Attempting to load PDF from: ' + pdfUrl);
-            
-            // PDF.js can directly load a URL, no need for a proxy
             pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
                 pdfDoc = pdf;
 
@@ -206,13 +196,11 @@
                     renderPage(pageNum);
                 }
             }).catch(function(error) {
-                alert("2. PDF.js loading error: " + error.message);
                 console.error("Error loading PDF with PDF.js:", error);
                 loadingMessage.textContent = 'Error loading book. Please try again.';
             });
         }
 
-        // Initial setup on page load
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 userId = user.uid;
@@ -226,7 +214,6 @@
                     if (snapshot.exists()) {
                         const book = snapshot.val();
                         
-                        // Check for pdfUrl and load it
                         if (book.pdfUrl) {
                             loadPDF(book.pdfUrl);
                             document.title = book.title;
@@ -238,7 +225,6 @@
                         loadingMessage.textContent = 'Book not found.';
                     }
                 }).catch(error => {
-                    alert(error)
                     console.error("Error fetching book data:", error);
                     loadingMessage.textContent = 'Error fetching book data.';
                 });
