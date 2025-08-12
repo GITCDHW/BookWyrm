@@ -2,10 +2,8 @@ const Busboy = require('busboy');
 const axios = require('axios');
 const FormData = require('form-data');
 
-// Replace this with your ImgBB API key.
 const IMGBB_API_KEY = "e27ce0c471c6edcdf98e57c4697c4cff";
 
-// Use your Cloudinary credentials from your Netlify environment variables.
 const CLOUDINARY_CLOUD_NAME = "db2hfiqln";
 const CLOUDINARY_UPLOAD_PRESET = "bookwyrm_pdfs"; 
 
