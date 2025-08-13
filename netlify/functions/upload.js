@@ -25,7 +25,16 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const busboy = Busboy({ headers: { 'content-type': event.headers['content-type'] } });
+  // Normalize headers to lowercase to ensure Busboy works correctly
+  const headers = Object.keys(event.headers).reduce((acc, key) => {
+    acc[key.toLowerCase()] = event.headers[key];
+    return acc;
+  }, {});
+
+  const busboy = Busboy({ headers: headers });
+
+  // Correctly handle base64 encoding from Netlify
+  const requestBody = event.isBase64Encoded ? Buffer.from(event.body, 'base64') : event.body;
 
   return new Promise((resolve, reject) => {
     const files = {};
@@ -65,6 +74,7 @@ exports.handler = async (event, context) => {
     busboy.on('finish', async () => {
       console.log('Busboy finished parsing. Files:', Object.keys(files));
       
+      // Ensure the response always has a JSON body, even for errors
       if (!files.coverImage || !files.pdfFile) {
         return resolve({ 
           statusCode: 400, 
@@ -72,7 +82,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ body: 'Missing cover image or PDF file.' }) 
+          body: JSON.stringify({ error: 'Missing cover image or PDF file.' }) 
         });
       }
 
@@ -80,6 +90,7 @@ exports.handler = async (event, context) => {
         const uploadPromises = [];
         let coverUrl, pdfUrl;
 
+        // --- ImgBB Upload (unchanged, it was already correct) ---
         const imgbbFormData = new FormData();
         imgbbFormData.append('image', files.coverImage.buffer, { filename: 'cover.jpg' });
 
@@ -90,21 +101,20 @@ exports.handler = async (event, context) => {
           console.log('ImgBB upload successful.');
         }));
 
-        const cloudinaryPdfFormData = new FormData();
-        // Append the buffer directly with filename and mimeType
-        cloudinaryPdfFormData.append('file', files.pdfFile.buffer, {
-          filename: files.pdfFile.filename,
-          contentType: files.pdfFile.mimeType,
-        });
-        cloudinaryPdfFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        cloudinaryPdfFormData.append('folder', 'bookwyrmx-pdfs');
-        cloudinaryPdfFormData.append('resource_type', 'raw'); 
+        // --- Cloudinary Upload (updated for robustness) ---
+        const pdfBase64 = files.pdfFile.buffer.toString('base64');
+        const cloudinaryPayload = {
+          file: `data:${files.pdfFile.mimeType};base64,${pdfBase64}`,
+          upload_preset: CLOUDINARY_UPLOAD_PRESET,
+          folder: 'bookwyrmx-pdfs',
+          resource_type: 'raw',
+        };
 
-        console.log('Starting Cloudinary upload with direct buffer...');
+        console.log('Starting Cloudinary upload with base64 string...');
+
         uploadPromises.push(axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
-          cloudinaryPdfFormData,
-          { headers: cloudinaryPdfFormData.getHeaders() }
+          cloudinaryPayload
         ).then(response => {
           pdfUrl = response.data.secure_url;
           console.log('Cloudinary upload successful.');
@@ -137,9 +147,6 @@ exports.handler = async (event, context) => {
       }
     });
 
-    // Check if the body is base64 encoded and decode it if necessary.
-const requestBody = event.isBase64Encoded ? Buffer.from(event.body, 'base64') : event.body;
-busboy.end(requestBody);
-
+    busboy.end(requestBody);
   });
 };
