@@ -122,7 +122,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl, pdfUrl }), // Now returning both URLs
+          body: JSON.stringify({ coverUrl, pdfUrl })
         });
       } catch (error) {
         console.error('File Upload Error:', error.response ? error.response.data : error);
