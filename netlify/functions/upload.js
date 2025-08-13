@@ -50,7 +50,6 @@ exports.handler = async (event, context) => {
       });
     });
 
-    // CRUCIAL: Add a busboy error handler
     busboy.on('error', (err) => {
       console.error('Busboy parsing error:', err);
       resolve({
@@ -66,7 +65,6 @@ exports.handler = async (event, context) => {
     busboy.on('finish', async () => {
       console.log('Busboy finished parsing. Files:', Object.keys(files));
       
-      // Check if required files are present after parsing
       if (!files.coverImage || !files.pdfFile) {
         return resolve({ 
           statusCode: 400, 
@@ -85,7 +83,6 @@ exports.handler = async (event, context) => {
         // --- Upload cover image to ImgBB ---
         const imgbbFormData = new FormData();
         imgbbFormData.append('image', files.coverImage.buffer, { filename: 'cover.jpg' });
-        console.log('Starting ImgBB upload...');
 
         uploadPromises.push(axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, imgbbFormData, {
           headers: imgbbFormData.getHeaders(),
@@ -94,13 +91,18 @@ exports.handler = async (event, context) => {
           console.log('ImgBB upload successful.');
         }));
 
-        // --- Upload PDF file to Cloudinary ---
+        // --- Upload PDF file to Cloudinary (REFINED) ---
         const cloudinaryPdfFormData = new FormData();
-        cloudinaryPdfFormData.append('file', `data:${files.pdfFile.mimeType};base64,${files.pdfFile.buffer.toString('base64')}`);
+        // Append the buffer directly with filename and mimeType
+        cloudinaryPdfFormData.append('file', files.pdfFile.buffer, {
+          filename: files.pdfFile.filename,
+          contentType: files.pdfFile.mimeType,
+        });
         cloudinaryPdfFormData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        cloudinaryPdfFormData.append('folder', 'bookwyrmx-pdfs'); // Use a different folder name
+        cloudinaryPdfFormData.append('folder', 'bookwyrmx-pdfs');
         cloudinaryPdfFormData.append('resource_type', 'raw'); 
-        console.log('Starting Cloudinary upload...');
+
+        console.log('Starting Cloudinary upload with direct buffer...');
 
         uploadPromises.push(axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
@@ -120,7 +122,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl, pdfUrl, fields }),
+          body: JSON.stringify({ coverUrl, pdfUrl }),
         });
       } catch (error) {
         console.error('File Upload Error:', error.response ? error.response.data : error);
