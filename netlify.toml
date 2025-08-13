@@ -1,2 +1,4 @@
 [functions]
-directory="netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["busboy", "axios", "form-data"]
+  timeout = 30 
