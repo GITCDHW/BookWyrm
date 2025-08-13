@@ -91,8 +91,7 @@ exports.handler = async (event, context) => {
           console.log('ImgBB upload successful.');
         }));
 
-        // --- Upload PDF file to Cloudinary (REFINED) ---
-        const cloudinaryPdfFormData = new FormData();
+   /**  const cloudinaryPdfFormData = new FormData();
         // Append the buffer directly with filename and mimeType
         cloudinaryPdfFormData.append('file', files.pdfFile.buffer, {
           filename: files.pdfFile.filename,
@@ -112,7 +111,7 @@ exports.handler = async (event, context) => {
           pdfUrl = response.data.secure_url;
           console.log('Cloudinary upload successful.');
         }));
-
+**/
         await Promise.all(uploadPromises);
         console.log('All uploads completed. Resolving with URLs.');
 
@@ -122,7 +121,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl, pdfUrl }),
+          body: JSON.stringify({ coverUrl }),
         });
       } catch (error) {
         console.error('File Upload Error:', error.response ? error.response.data : error);
