@@ -137,6 +137,9 @@ exports.handler = async (event, context) => {
       }
     });
 
-    busboy.end(Buffer.from(event.body, 'base64'));
+    // Check if the body is base64 encoded and decode it if necessary.
+const requestBody = event.isBase64Encoded ? Buffer.from(event.body, 'base64') : event.body;
+busboy.end(requestBody);
+
   });
 };
