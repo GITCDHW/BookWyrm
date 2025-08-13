@@ -4,8 +4,8 @@ const FormData = require('form-data');
 
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 
-const CLOUDINARY_CLOUD_NAME = process.env.CLOUD_NAME;
-const CLOUDINARY_UPLOAD_PRESET = process.env.UPLOAD_PRESET; 
+const CLOUDINARY_CLOUD_NAME = "db2hfiqln";
+const CLOUDINARY_UPLOAD_PRESET = "bookwyrm_pdfs";
 
 exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -91,7 +91,7 @@ exports.handler = async (event, context) => {
           console.log('ImgBB upload successful.');
         }));
 
-    const cloudinaryPdfFormData = new FormData();
+        const cloudinaryPdfFormData = new FormData();
         // Append the buffer directly with filename and mimeType
         cloudinaryPdfFormData.append('file', files.pdfFile.buffer, {
           filename: files.pdfFile.filename,
@@ -103,6 +103,7 @@ exports.handler = async (event, context) => {
 
         console.log('Starting Cloudinary upload with direct buffer...');
 
+        // Corrected Cloudinary API URL
         uploadPromises.push(axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
           cloudinaryPdfFormData,
@@ -121,7 +122,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ coverUrl }),
+          body: JSON.stringify({ coverUrl, pdfUrl }), // Now returning both URLs
         });
       } catch (error) {
         console.error('File Upload Error:', error.response ? error.response.data : error);
