@@ -131,20 +131,41 @@ exports.handler = async (event, context) => {
           },
           body: JSON.stringify({ coverUrl, pdfUrl })
         });
-      } catch (error) {
-        console.error('File Upload Error:', error.response ? error.response.data : error);
-        resolve({
-          statusCode: error.response ? error.response.status : 500,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            error: 'File upload failed.', 
-            details: error.response && error.response.data ? error.response.data : error.message 
-          }),
-        });
-      }
+      // New, more robust catch block
+} catch (error) {
+  console.error('File Upload Error:', error);
+
+  let errorDetails = 'An unexpected error occurred during file upload.';
+  let statusCode = 500;
+
+  // Check if the error is from an axios response (e.g., API rejected the request)
+  if (error.response && error.response.data) {
+    // If the API returned a string (e.g., "Internal Error"), use that.
+    // Otherwise, use the structured data.
+    if (typeof error.response.data === 'string') {
+      errorDetails = error.response.data;
+    } else {
+      errorDetails = error.response.data.error || JSON.stringify(error.response.data);
+    }
+    statusCode = error.response.status;
+  } else if (error.message) {
+    // If it's a general JavaScript error, use the message
+    errorDetails = error.message;
+  }
+
+  resolve({
+    statusCode: statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      error: 'File upload failed.',
+      details: errorDetails
+    }),
+  });
+}
+
     });
 
     busboy.end(requestBody);
