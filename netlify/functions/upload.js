@@ -72,7 +72,7 @@ exports.handler = async (event, context) => {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ error: 'Missing cover image or PDF file.' }) 
+          body: JSON.stringify({ body: 'Missing cover image or PDF file.' }) 
         });
       }
 
@@ -101,8 +101,6 @@ exports.handler = async (event, context) => {
         cloudinaryPdfFormData.append('resource_type', 'raw'); 
 
         console.log('Starting Cloudinary upload with direct buffer...');
-
-        // Corrected Cloudinary API URL
         uploadPromises.push(axios.post(
           `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`,
           cloudinaryPdfFormData,
