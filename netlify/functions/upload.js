@@ -2,7 +2,7 @@ const Busboy = require('busboy');
 const axios = require('axios');
 const FormData = require('form-data');
 
-const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
+const IMGBB_API_KEY = "e27ce0c471c6edcdf98e57c4697c4cff";
 
 const CLOUDINARY_CLOUD_NAME = "db2hfiqln";
 const CLOUDINARY_UPLOAD_PRESET = "bookwyrm_pdfs";
@@ -80,7 +80,6 @@ exports.handler = async (event, context) => {
         const uploadPromises = [];
         let coverUrl, pdfUrl;
 
-        // --- Upload cover image to ImgBB ---
         const imgbbFormData = new FormData();
         imgbbFormData.append('image', files.coverImage.buffer, { filename: 'cover.jpg' });
 
