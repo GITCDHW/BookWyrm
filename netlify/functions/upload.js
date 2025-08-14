@@ -131,7 +131,6 @@ exports.handler = async (event, context) => {
           },
           body: JSON.stringify({ coverUrl, pdfUrl })
         });
-      // New, more robust catch block
 } catch (error) {
   console.error('File Upload Error:', error);
 
@@ -165,6 +164,7 @@ exports.handler = async (event, context) => {
     }),
   });
 }
+
 
     });
 
