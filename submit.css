@@ -6,7 +6,9 @@
     padding: 20px 0;
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
-
+#sign_in_text{
+    display:none;
+}
 .submission-header .logo h1 {
     font-size: 2.5em;
 }

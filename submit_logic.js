@@ -7,6 +7,7 @@ form.addEventListener("submit", async (e) => {
 
   if (!user) {
     alert("You must be signed in to submit a book.");
+    document.getElementById("sign_in_text").style.display="block";
     return;
   } else if (!title.value || !coverImageFile || !pdfDocumentFile) {
     alert("Please provide a title, cover image, and PDF file before submitting.");
