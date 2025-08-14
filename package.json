@@ -8,6 +8,7 @@
     "form-data": "^4.0.0",
     "fs-extra": "^11.2.0",
     "@google/generative-ai": "^0.15.0",
-    "firebase-admin":"^11.10.1"
+    "firebase-admin":"^11.10.1",
+    "cloudinary": "^1.41.0"
   }
 }
