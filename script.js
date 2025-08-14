@@ -20,13 +20,12 @@ const loader = document.getElementById("load-container")
         // Collect books into their category arrays
         const category = book.category ? book.category.toLowerCase() : '';
         
-        if (category === "science") {
+        if (category === "Science") {
           scienceBooks.push({ id: bookId, ...book });
-        } else if (category === "philosophy") {
+        } else if (category === "Philosophy") {
           philosophyBooks.push({ id: bookId, ...book });
         }
         
-        // This logic is separate, so it only affects featured books.
         if (featuredBooksCount < maxFeaturedBooks) {
           const featuredBookItem = document.createElement("div");
           featuredBookItem.setAttribute("class", "book-item");
