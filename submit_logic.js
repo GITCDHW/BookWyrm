@@ -1,4 +1,4 @@
-Form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   firebase.auth().onAuthStateChanged(async (user) => {
