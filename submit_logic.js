@@ -5,7 +5,7 @@ form.addEventListener("submit", async (e) => {
     if (!user) {
       alert("You must be signed in to submit a book.");
       // This function will display the FirebaseUI login flow
-      startFirebaseUI("/publish.html"); 
+      startFirebaseUI("/submit.html"); 
       // The page to redirect to after successful sign-in
       return; 
     }
