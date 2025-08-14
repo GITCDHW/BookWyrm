@@ -1,4 +1,5 @@
-Form.addEventListener("submit", async (e) => {
+const submitButton = document.getElementById("submitBtn");
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const user = firebase.auth().currentUser;
@@ -14,7 +15,6 @@ Form.addEventListener("submit", async (e) => {
   // Submission logic starts here, only if a user is found
   const coverFile = document.getElementById("cover-file");
   const pdfFile = document.getElementById("pdf-file");
-const submitButton = document.getElementById("submitBtn");
   const coverImageFile = coverFile.files[0];
   const pdfDocumentFile = pdfFile.files[0];
 
