@@ -1,5 +1,7 @@
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  const coverFile = document.getElementById("cover-file");
+const pdfFile = document.getElementById("pdf-file");
   let user = firebase.auth().currentUser;
 
   const coverImageFile = coverFile.files[0];
