@@ -1,52 +1,3 @@
-document.getElementById('sign_in_ui').style.display = 'none';
-const title = document.getElementById("title");
-const description = document.getElementById("description");
-const coverFile = document.getElementById("cover-file");
-const pdfFile = document.getElementById("pdf-file"); // New PDF file input
-const form = document.getElementById("form");
-const submitButton = document.querySelector(".submit-button");
-
-var ui = new firebaseui.auth.AuthUI(auth);
-
-var uiConfig = {
-  signInSuccessUrl: "/submit.html",
-  callbacks: {
-    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-      console.log('User signed in:', authResult.user);
-      alert('User signed in successfully!'); // Debugging alert
-      return true;
-    },
-    uiShown: function() {
-      console.log('FirebaseUI widget shown.');
-    }
-  },
-  signInFlow: 'popup',
-  signInOptions: [{
-    provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-    emailLinkSignIn: {
-      url: "/submit.html",
-      handleCodeInApp: true
-    }
-  }],
-  tosUrl: '/terms.html',
-  privacyPolicyUrl: '/privacy-policy.html'
-};
-
-ui.start('#sign_in_ui', uiConfig);
-
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.querySelector(".container").style.display = "block";
-    document.querySelector("#sign_in_text").style.display = "none";
-    alert('User authenticated. Form is now visible.'); // Debugging alert
-  } else {
-    document.getElementById('sign_in_ui').style.display = 'block';
-    document.querySelector(".container").style.display = "none";
-    alert('User not authenticated. Please sign in.'); // Debugging alert
-  }
-});
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   let user = firebase.auth().currentUser;
@@ -80,16 +31,19 @@ form.addEventListener("submit", async (e) => {
       method: 'POST',
       body: formData,
     });
-
+    
     alert("Request sent. Awaiting response..."); // Debugging alert
 
+    // Read the JSON response body once and store it
+    const responseData = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      alert("Server responded with an error. Status: " + response.status + ". Error: " + (errorData.error || 'Unknown error'));
-      throw new Error(errorData.error || 'Failed to upload files via Netlify function');
+      alert("Server responded with an error. Status: " + response.status + ". Error: " + (responseData.details || responseData.error || 'Unknown error'));
+      throw new Error(responseData.error || 'Failed to upload files via Netlify function');
     }
 
-    const { coverUrl, pdfUrl } = await response.json(); // Expect both URLs
+    // Use the data from the single response body for success
+    const { coverUrl, pdfUrl } = responseData;
     
     alert("Files uploaded successfully! Cover URL: " + coverUrl + ", PDF URL: " + pdfUrl); // Debugging alert
 
