@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else {
       document.querySelector(".dashboard-container").style.display = "none";
-      // Assuming startFirebaseUI is a function that takes a URL
       startFirebaseUI("/user_dashboard.html");
     }
   });
