@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.getElementById("wrapper")
-const loader = document.getElementById("load-container")
+  const loader = document.getElementById("load-container")
 
   const featuredBooksGrid = document.getElementById('featured-book-grid');
   const scienceBooksGrid = document.getElementById('science-book-grid');
@@ -13,11 +13,8 @@ const loader = document.getElementById("load-container")
       
       const scienceBooks = [];
       const philosophyBooks = [];
-      let featuredBooksCount = 0;
-      const maxFeaturedBooks = 3;
       
       booksArray.forEach(([bookId, book]) => {
-        // Collect books into their category arrays
         const category = book.Category;
         
         if (category === "Science") {
@@ -25,14 +22,16 @@ const loader = document.getElementById("load-container")
         } else if (category === "Philosophy") {
           philosophyBooks.push({ id: bookId, ...book });
         }
-        
-        if (featuredBooksCount < maxFeaturedBooks) {
-          const featuredBookItem = document.createElement("div");
-          featuredBookItem.setAttribute("class", "book-item");
-          featuredBookItem.innerHTML = `<a href="viewpdf.html?id=${bookId}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
-          featuredBooksGrid.appendChild(featuredBookItem);
-          featuredBooksCount++;
-        }
+      });
+      console.log(scienceBooks)
+      console.log(philosophyBooks)
+      // Render Featured books (first 3 from the database)
+      const maxFeaturedBooks = 3;
+      booksArray.slice(0, maxFeaturedBooks).forEach(([bookId, book]) => {
+        const featuredBookItem = document.createElement("div");
+        featuredBookItem.setAttribute("class", "book-item");
+        featuredBookItem.innerHTML = `<a href="viewer.html?id=${bookId}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
+        featuredBooksGrid.appendChild(featuredBookItem);
       });
       
       const maxCategoryBooks = 12; 
@@ -40,7 +39,7 @@ const loader = document.getElementById("load-container")
       scienceBooks.slice(0, maxCategoryBooks).forEach(book => {
         const scienceBookItem = document.createElement("div");
         scienceBookItem.setAttribute("class", "book-item");
-        scienceBookItem.innerHTML = `<a href="viewpdf.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
+        scienceBookItem.innerHTML = `<a href="viewer.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
         scienceBooksGrid.appendChild(scienceBookItem);
       });
       
@@ -48,7 +47,7 @@ const loader = document.getElementById("load-container")
       philosophyBooks.slice(0, maxCategoryBooks).forEach(book => {
         const philosophyBookItem = document.createElement("div");
         philosophyBookItem.setAttribute("class", "book-item");
-        philosophyBookItem.innerHTML = `<a href="viewpdf.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
+        philosophyBookItem.innerHTML = `<a href="viewer.html?id=${book.id}"><img src="${book.coverUrl}" alt="${book.title}"></a>`;
         philosophyBooksGrid.appendChild(philosophyBookItem);
       });
     } else {
@@ -106,7 +105,7 @@ const loader = document.getElementById("load-container")
         const suggestionList = document.createElement("ul");
         suggestions.forEach(book => {
           const listItem = document.createElement("li");
-          listItem.innerHTML = `<strong><a href="viewpdf.html?id=${book.id}">${book.title}</a></strong> by ${book.author}: ${book.summary}`;
+          listItem.innerHTML = `<strong><a href="viewer.html?id=${book.id}">${book.title}</a></strong> by ${book.author}: ${book.summary}`;
           suggestionList.appendChild(listItem);
         });
         suggestionOutputPopup.appendChild(suggestionList);
