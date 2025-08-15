@@ -9,22 +9,27 @@ document.addEventListener("DOMContentLoaded", () => {
   rootRef.once("value").then((snapshot) => {
     if (snapshot.exists()) {
       const allBooks = snapshot.val();
+      console.log(allBooks)
       const booksArray = Object.entries(allBooks);
       
       const scienceBooks = [];
       const philosophyBooks = [];
       
-      booksArray.forEach(([bookId, book]) => {
-        const category = book.Category;
-        
-        if (category === "Science") {
-          scienceBooks.push({ id: bookId, ...book });
-        } else if (category === "Philosophy") {
-          philosophyBooks.push({ id: bookId, ...book });
-        }
-      });
-      console.log(scienceBooks)
-      console.log(philosophyBooks)
+booksArray.forEach(([bookId, book]) => {
+  // Check if book.Category exists before trying to access it
+  if (book.category) {
+    const category = book.category.trim().toLowerCase();
+    
+    if (category === "science") {
+      scienceBooks.push({ id: bookId, ...book });
+    } else if (category === "philosophy") {
+      philosophyBooks.push({ id: bookId, ...book });
+    }
+  } else {
+    console.warn(`Book with ID ${bookId} is missing a category.`);
+  }
+});
+
       // Render Featured books (first 3 from the database)
       const maxFeaturedBooks = 3;
       booksArray.slice(0, maxFeaturedBooks).forEach(([bookId, book]) => {

@@ -1,4 +1,6 @@
+const form = document.getElementById("form");
 const submitButton = document.getElementById("submitBtn");
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -13,13 +15,16 @@ form.addEventListener("submit", async (e) => {
   }
 
   // Submission logic starts here, only if a user is found
+  const title = document.getElementById("title");
+  const description = document.getElementById("description");
+  const genre = document.getElementById("genre"); // <-- Get the genre field
   const coverFile = document.getElementById("cover-file");
   const pdfFile = document.getElementById("pdf-file");
   const coverImageFile = coverFile.files[0];
   const pdfDocumentFile = pdfFile.files[0];
 
-  if (!title.value || !coverImageFile || !pdfDocumentFile) {
-    alert("Please provide a title, cover image, and PDF file before submitting.");
+  if (!title.value || !description.value || !genre.value || !coverImageFile || !pdfDocumentFile) {
+    alert("Please fill out all fields before submitting.");
     return;
   }
 
@@ -33,16 +38,18 @@ form.addEventListener("submit", async (e) => {
   const formData = new FormData();
   formData.append('coverImage', coverImageFile);
   formData.append('pdfFile', pdfDocumentFile);
+  
+  // The alert below might be from an older version of your code.
+  // It's recommended to use console.log for debugging.
+  // alert("Sending request to Netlify function...");
 
   try {
-    alert("Sending request to Netlify function...");
-
     const response = await fetch(functionUrl, {
       method: 'POST',
       body: formData,
     });
 
-    alert("Request sent. Awaiting response...");
+    // alert("Request sent. Awaiting response...");
 
     const responseData = await response.json();
 
@@ -58,6 +65,7 @@ form.addEventListener("submit", async (e) => {
     const bookData = {
       title: title.value,
       description: description.value,
+      category: genre.value, // <-- Add the category to the bookData object
       coverUrl: coverUrl,
       pdfUrl: pdfUrl
     };
