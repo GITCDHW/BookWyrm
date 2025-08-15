@@ -18,7 +18,7 @@ const loader = document.getElementById("load-container")
       
       booksArray.forEach(([bookId, book]) => {
         // Collect books into their category arrays
-        const category = book.category ? book.category.toLowerCase() : '';
+        const category = book.Category;
         
         if (category === "Science") {
           scienceBooks.push({ id: bookId, ...book });
@@ -35,9 +35,7 @@ const loader = document.getElementById("load-container")
         }
       });
       
-      // Now, display a limited number from the categorized arrays.
-      const maxCategoryBooks = 12; // You can change this number for all categories
-      
+      const maxCategoryBooks = 12; 
       // Render Science books
       scienceBooks.slice(0, maxCategoryBooks).forEach(book => {
         const scienceBookItem = document.createElement("div");
