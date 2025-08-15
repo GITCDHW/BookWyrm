@@ -28,8 +28,6 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  alert("Validation passed. Starting submission process...");
-
   submitButton.disabled = true;
   submitButton.textContent = 'Submitting...';
 
@@ -39,9 +37,6 @@ form.addEventListener("submit", async (e) => {
   formData.append('coverImage', coverImageFile);
   formData.append('pdfFile', pdfDocumentFile);
   
-  // The alert below might be from an older version of your code.
-  // It's recommended to use console.log for debugging.
-  // alert("Sending request to Netlify function...");
 
   try {
     const response = await fetch(functionUrl, {
@@ -49,18 +44,15 @@ form.addEventListener("submit", async (e) => {
       body: formData,
     });
 
-    // alert("Request sent. Awaiting response...");
 
     const responseData = await response.json();
 
     if (!response.ok) {
-      alert("Server responded with an error. Status: " + response.status + ". Error: " + (responseData.details || responseData.error || 'Unknown error'));
+      
       throw new Error(responseData.error || 'Failed to upload files via Netlify function');
     }
 
     const { coverUrl, pdfUrl } = responseData;
-
-    alert("Files uploaded successfully! Cover URL: " + coverUrl + ", PDF URL: " + pdfUrl);
 
     const bookData = {
       title: title.value,
@@ -75,8 +67,7 @@ form.addEventListener("submit", async (e) => {
     form.reset();
 
   } catch (error) {
-    console.error("Submission error:", error);
-    alert("An error occurred: " + error.message);
+    alert("an error occurred")
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = 'Submit Book';
